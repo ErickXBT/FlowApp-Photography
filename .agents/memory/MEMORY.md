@@ -1,0 +1,2 @@
+- [Admin router auth bug](admin-router-auth-bug.md) — router.use(middleware) without path prefix in a sub-router blocks ALL requests through the main router, not just the sub-router's own routes.
+- [API client credentials](api-client-credentials.md) — custom-fetch must default credentials:"include" for session cookie auth to work with generated hooks.

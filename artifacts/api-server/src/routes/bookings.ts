@@ -17,8 +17,10 @@ import {
   UpdateBookingStatusResponse,
 } from "@workspace/api-zod";
 import { shapeBookingListItem, shapeBookingListItems, shapeBookingDetail } from "../lib/shape";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 router.get("/bookings", async (req, res): Promise<void> => {
   const query = ListBookingsQueryParams.safeParse(req.query);

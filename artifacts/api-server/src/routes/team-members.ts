@@ -10,8 +10,10 @@ import {
   UpdateTeamMemberResponse,
   DeleteTeamMemberParams,
 } from "@workspace/api-zod";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 router.get("/team", async (_req, res): Promise<void> => {
   const teamMembers = await db.select().from(teamMembersTable).orderBy(teamMembersTable.name);

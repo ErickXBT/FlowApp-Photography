@@ -13,7 +13,10 @@ import {
   DeletePackageParams,
 } from "@workspace/api-zod";
 
+import { requireVendor } from "../lib/auth";
+
 const router: IRouter = Router();
+router.use(requireVendor);
 
 function toNumericPackage<T extends { price: string | number }>(pkg: T) {
   return { ...pkg, price: Number(pkg.price) };

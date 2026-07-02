@@ -1,8 +1,10 @@
 import { Router, type IRouter } from "express";
 import { db, bookingsTable, clientsTable, packagesTable } from "@workspace/db";
 import { GetCalendarBookingsResponse } from "@workspace/api-zod";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 router.get("/calendar", async (_req, res): Promise<void> => {
   const bookings = await db.select().from(bookingsTable);

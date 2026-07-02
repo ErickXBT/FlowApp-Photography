@@ -10,8 +10,10 @@ import {
   UpdateInvoicePaymentResponse,
 } from "@workspace/api-zod";
 import { shapeInvoiceListItem, shapeBookingListItem, computeInvoiceStatus } from "../lib/shape";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 router.get("/invoices", async (_req, res): Promise<void> => {
   const invoices = await db.select().from(invoicesTable).orderBy(desc(invoicesTable.issueDate));

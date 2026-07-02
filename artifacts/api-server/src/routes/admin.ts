@@ -5,9 +5,8 @@ import { eq, count } from "drizzle-orm";
 import { requireSuperAdmin } from "../lib/auth";
 
 const router = Router();
-router.use(requireSuperAdmin);
 
-router.get("/admin/stats", async (req, res) => {
+router.get("/admin/stats", requireSuperAdmin, async (req, res) => {
   const tenantList = await db.select().from(tenants);
   const [bookingCount] = await db.select({ count: count() }).from(bookingsTable);
   const totalFee = 1350000;
@@ -19,12 +18,12 @@ router.get("/admin/stats", async (req, res) => {
   });
 });
 
-router.get("/admin/tenants", async (req, res) => {
+router.get("/admin/tenants", requireSuperAdmin, async (req, res) => {
   const tenantList = await db.select().from(tenants);
   res.json(tenantList);
 });
 
-router.post("/admin/tenants", async (req, res) => {
+router.post("/admin/tenants", requireSuperAdmin, async (req, res) => {
   const { studioName, ownerName, email, password, category, location, plan, whatsapp } = req.body as {
     studioName: string; ownerName: string; email: string; password: string;
     category?: string; location?: string; plan?: string; whatsapp?: string;
@@ -57,7 +56,7 @@ router.post("/admin/tenants", async (req, res) => {
   res.json({ tenant, user: { id: user.id, email: user.email } });
 });
 
-router.patch("/admin/tenants/:id", async (req, res) => {
+router.patch("/admin/tenants/:id", requireSuperAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const { active, plan } = req.body as { active?: boolean; plan?: string };
   const [updated] = await db.update(tenants)
@@ -67,7 +66,7 @@ router.patch("/admin/tenants/:id", async (req, res) => {
   res.json(updated);
 });
 
-router.post("/admin/tenants/:id/suspend", async (req, res) => {
+router.post("/admin/tenants/:id/suspend", requireSuperAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const [t] = await db.select().from(tenants).where(eq(tenants.id, id)).limit(1);
   if (!t) { res.status(404).json({ error: "Not found" }); return; }
@@ -75,7 +74,7 @@ router.post("/admin/tenants/:id/suspend", async (req, res) => {
   res.json(updated);
 });
 
-router.get("/admin/activity", async (req, res) => {
+router.get("/admin/activity", requireSuperAdmin, async (req, res) => {
   const activities = [
     { message: "Super admin logged in", time: "Baru saja" },
     { message: "Tenant baru Studio Senja terdaftar", time: "1 jam yang lalu" },
@@ -108,7 +107,7 @@ const saasPlans = [
   },
 ];
 
-router.get("/admin/plans", (req, res) => {
+router.get("/admin/plans", requireSuperAdmin, (req, res) => {
   res.json(saasPlans);
 });
 

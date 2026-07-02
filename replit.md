@@ -56,6 +56,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 - Run `pnpm --filter @workspace/db run push` after any schema change before restarting the API server.
 - The API server's `dev` script does a full esbuild before starting — type errors will surface here.
 - `DATABASE_URL` and other `PG*` vars are runtime-managed by Replit; do not set them manually.
+- **NEVER** use `router.use(authMiddleware)` at the top of a sub-router mounted without a path prefix — it blocks ALL requests app-wide. Use per-route middleware instead: `router.get("/path", requireVendor, handler)`.
+- `custom-fetch.ts` must keep `credentials: "include"` as the default; removing it breaks all session-cookie auth for generated hooks.
+- Demo accounts (seeded): `vendor@senja.id / vendor123` (Vendor), `admin@flowapp.id / admin123` (Super Admin).
 
 ## Pointers
 

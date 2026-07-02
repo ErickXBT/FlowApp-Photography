@@ -12,8 +12,10 @@ import {
   ToggleFileSelectionBody,
   ToggleFileSelectionResponse,
 } from "@workspace/api-zod";
+import { requireAuth } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireAuth);
 
 router.get("/bookings/:bookingId/files", async (req, res): Promise<void> => {
   const params = ListBookingFilesParams.safeParse(req.params);

@@ -10,8 +10,10 @@ import {
   UpdateAddOnResponse,
   DeleteAddOnParams,
 } from "@workspace/api-zod";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 function toNumericAddOn<T extends { price: string | number }>(a: T) {
   return { ...a, price: Number(a.price) };

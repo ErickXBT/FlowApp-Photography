@@ -13,8 +13,10 @@ import {
   DeleteClientParams,
 } from "@workspace/api-zod";
 import { shapeBookingListItems } from "../lib/shape";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
+router.use(requireVendor);
 
 router.get("/clients", async (_req, res): Promise<void> => {
   const clients = await db.select().from(clientsTable).orderBy(desc(clientsTable.createdAt));

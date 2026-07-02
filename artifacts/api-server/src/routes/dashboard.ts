@@ -1,12 +1,13 @@
 import { Router, type IRouter } from "express";
-import { gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, bookingsTable, invoicesTable, bookingStatusEnum } from "@workspace/db";
 import { GetDashboardSummaryResponse } from "@workspace/api-zod";
 import { shapeBookingListItems } from "../lib/shape";
+import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
 
-router.get("/dashboard/summary", async (_req, res): Promise<void> => {
+router.get("/dashboard/summary", requireVendor, async (req, res): Promise<void> => {
   const bookings = await db.select().from(bookingsTable);
   const invoices = await db.select().from(invoicesTable);
 
