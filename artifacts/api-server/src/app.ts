@@ -38,7 +38,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     store: new PgSession({ pool, createTableIfMissing: true }),
-    secret: process.env["SESSION_SECRET"] ?? "dev-secret-change-me",
+    secret: (() => {
+      const s = process.env["SESSION_SECRET"];
+      if (!s) throw new Error("SESSION_SECRET environment variable is required");
+      return s;
+    })(),
     resave: false,
     saveUninitialized: false,
     cookie: {

@@ -18,7 +18,7 @@ async function seedAuth() {
     passwordHash: adminHash,
     name: "FlowAdmin",
     role: "super_admin",
-    tenantId: 0,
+    tenantId: null,
   });
   console.log("  ✓ Super admin created (admin@flowapp.id / admin123)");
 

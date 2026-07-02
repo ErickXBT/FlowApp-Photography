@@ -1,36 +1,51 @@
-# [Project name]
+# FlowApp
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A SaaS platform for photographers and MUAs — booking engine, CRM, project management, file delivery, and automatic invoicing in one dashboard.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- **Frontend** (FlowApp): `pnpm --filter @workspace/flowapp run dev` — React/Vite app
+- **API**: `pnpm --filter @workspace/api-server run dev` — Express 5 server (builds then starts)
+- Both servers are configured as Replit workflows and start automatically.
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/db run push` — push DB schema changes to the dev database (run after schema edits)
+
+## Required Environment Variables
+
+- `DATABASE_URL` — auto-provisioned by Replit (do not set manually)
+- `SESSION_SECRET` — required secret for signing Express sessions; the API server **fails fast** if absent
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React 19 + Vite 7 + Tailwind CSS 4 + shadcn/ui (artifacts/flowapp)
+- API: Express 5 (artifacts/api-server)
+- DB: PostgreSQL + Drizzle ORM (lib/db)
+- Validation: Zod (zod/v4), drizzle-zod
+- API codegen: Orval (from OpenAPI spec in lib/api-spec)
+- Build: esbuild (CJS bundle for API)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/flowapp/src/` — React app; pages in `pages/`, components in `components/`
+- `artifacts/api-server/src/routes/` — Express route handlers (auth, bookings, dashboard, etc.)
+- `lib/db/src/schema/` — Drizzle schema files (source of truth for DB shape)
+- `lib/api-spec/` — OpenAPI spec; run codegen after editing it
+- `lib/api-client-react/` — generated TanStack Query hooks
+- `lib/api-zod/` — generated Zod schemas
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- `users.tenantId` is a nullable integer FK to `tenants.id`; new vendors register without a tenant and get one assigned after onboarding.
+- Sessions are stored in PostgreSQL via `connect-pg-simple`; `SESSION_SECRET` is mandatory at startup (fail-fast).
+- The API server is built to CJS via esbuild before each `dev` run — TypeScript is not executed directly.
+- The Vite dev server proxies `/api/*` to the API server (port 5000 in dev).
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+FlowApp is a multi-tenant SaaS for photography studios and MUAs. Vendors manage bookings, team members, dress catalogs, and client file delivery. Clients book via a branded landing page, track their booking status, and select/download delivered photos.
 
 ## User preferences
 
@@ -38,7 +53,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run `pnpm --filter @workspace/db run push` after any schema change before restarting the API server.
+- The API server's `dev` script does a full esbuild before starting — type errors will surface here.
+- `DATABASE_URL` and other `PG*` vars are runtime-managed by Replit; do not set them manually.
 
 ## Pointers
 
