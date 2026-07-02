@@ -1,0 +1,110 @@
+FlowApp SaaS Implementation Plan
+This plan details the architecture and implementation steps to build the frontend prototype/MVP of FlowApp, a comprehensive SaaS platform for Booking, CRM, Project Management, File Delivery, and Automatic Invoicing tailored for the photographer and MUA industry.
+
+User Review Required
+We are creating a fully functional, high-fidelity web application prototype that runs locally. To ensure it runs out-of-the-box on your machine without requiring complex backend servers, databases (PostgreSQL), storage setups (Cloudflare R2/S3), or third-party APIs (Midtrans, Xendit, Google Maps, WhatsApp Business), we propose:
+
+Mock Backend & Context API: Implement a robust React Context + LocalStorage system that simulates database queries, updates, and persistence. This means changes made in the Vendor Dashboard (like approving reschedule requests, updating calendar states) will reflect in the Client Dashboard in real time!
+Interactive 14-Step Booking Engine: Fully implement the 14-step wizard with visual selectors (dresses, MUA portfolios, interactive calendar).
+File Delivery & Photo Selection: Implement a mock photo gallery showing 500 images, allowing the client to select up to a limit (e.g., 50), with a selection counter, download simulations (single or ZIP), and editing request forms that route to the editor team.
+Automatic PDF Invoicing: Leverage a clean client-side HTML-to-PDF or custom CSS printable layout so clients can download invoices directly.
+Color Palette: Clean Charcoal (#1F2937), Lime (#A3E635), and Soft Gray (#F3F4F6) theme with glassmorphism cards, glowing active states, and dark mode vibes for creative industries.
+IMPORTANT
+
+Styling Choice: We will build the application using Vite + React and a custom-designed modern CSS system (src/index.css) rather than Tailwind CSS to avoid any version compatibility issues or build tool setup friction. The CSS system will define standard classes for premium grid layouts, flex containers, glass cards, micro-animations, and the custom Charcoal-Lime color theme. Let us know if you prefer Tailwind CSS instead!
+
+Open Questions
+NOTE
+
+MUA & Dress Catalogs: Do you want specific initial mock collections for the dress/jas catalog (e.g., styles, sizes, colors) or MUA portfolios, or should we pre-populate it with generic creative assets?
+Initial Data: Should the dashboard come pre-populated with several active bookings, completed sessions, and pending invoices so you can see the charts and tables immediately upon launching?
+Proposed Changes
+We will construct the project in e:/FLOWAPP STUDIO with the following structure:
+
+[Core Config & Build Files]
+[NEW] 
+package.json
+Standard dependencies including react, react-dom, lucide-react (for modern iconography), and build scripts using vite.
+
+[NEW] 
+vite.config.js
+Vite configuration for React rendering.
+
+[NEW] 
+index.html
+Main HTML entrypoint with custom typography (Google Font: Outfit or Inter) and styling wrappers.
+
+[State Management & Data Model]
+[NEW] 
+AppContext.jsx
+State manager that handles:
+
+Active user role: Super Admin, Vendor, Client
+Lists of users, vendors, packages, bookings, invoices, payments, calendars, team_members, dress_catalog, gallery_files, selected_photos, revisions
+Real-time modifications (e.g., creating a booking, selecting photos, requesting revisions, rescheduling, editing statuses)
+Synchronization with LocalStorage
+[Styling System]
+[NEW] 
+index.css
+The design engine for FlowApp:
+
+CSS Variables (--charcoal, --lime, --soft-gray, --white, --dark-card)
+Smooth slide and fade animations for wizard steps
+Custom dashboard grids, calendar UI layouts
+Responsive typography and spacing rules
+[Components & Pages]
+[NEW] 
+App.jsx
+Core router and layout switcher. Contains the role selection topbar so you can toggle roles (Client, Vendor, Super Admin) and watch changes propagate instantly.
+
+[NEW] 
+LandingPage.jsx
+Simulated brand profile (e.g., flowapp.com/studioabc) featuring:
+
+Brand Cover, Logo, Bio, Social Links
+Digital QR Profile scanner / link preview
+Portfolio grid & pricing packages with instant "Book Now" trigger.
+[NEW] 
+BookingEngine.jsx
+The multi-step booking funnel:
+
+Steps 1-2: Category & Packages
+Step 3: Calendar check (real-time slot availability)
+Steps 4-5: Booking Form & Event location integration
+Steps 6-8: MUA Team, Hair Stylist, and Dress catalog selectors
+Steps 9-11: Add-ons, special requests, and moodboard attachment (URL or mock upload)
+Steps 12-14: Payment simulation, auto-generated Invoice display, and instant WA redirect.
+[NEW] 
+ClientDashboard.jsx
+The client interface:
+
+My Bookings: Real-time status tracker (DP Paid, Shooting, Editing, Completed).
+Reschedule tool: Request form sending updates directly to the vendor.
+Invoices: View & download details.
+File Delivery & Selection: Photo gallery preview, checkbox selector (e.g. choose 50 out of 500 images) with validation rules, ZIP download emulator, and direct revision requests for individual photos (e.g., "crop," "remove acne").
+[NEW] 
+VendorDashboard.jsx
+The Vendor interface:
+
+Booking Management: List with inline status changes (e.g., DP Paid -> Shooting -> Editing -> Closed).
+Interactive Calendar: Drag-and-drop or select to edit status, reschedule, and block unavailable dates.
+Team Management: Staff availability toggles.
+Dress Catalog: Manage stock, sizing, colors, and availability.
+CRM & Client history: View transaction values, notes, and records.
+Reschedule Approvals: Approve or reject client proposals.
+[NEW] 
+SuperAdminDashboard.jsx
+The platform administrator interface:
+
+Vendor directory, activity analytics, tenant billing statuses.
+Verification Plan
+Automated Tests
+Build verification: npm run build to ensure no linting or React syntax issues occur.
+Manual Verification
+Launch development server: npm run dev.
+Toggle between Client and Vendor roles.
+Complete a 14-step booking on the Brand Landing Page and watch the booking status appear immediately under Pending in the Vendor Dashboard.
+From the Vendor Dashboard, mark the booking as Fully Paid and upload photos.
+In the Client Dashboard, check the File Delivery page, select photos, and request an edit.
+Verify editing request appears in the Vendor's task queue.
+Click "Download Invoice" to verify print styling/PDF generation.
