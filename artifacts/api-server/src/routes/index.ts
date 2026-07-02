@@ -10,9 +10,16 @@ import bookingsRouter from "./bookings";
 import calendarRouter from "./calendar";
 import invoicesRouter from "./invoices";
 import bookingFilesRouter from "./booking-files";
+import authRouter from "./auth";
+import adminRouter from "./admin";
+import dressCatalogRouter from "./dress-catalog";
+import rescheduleRouter from "./reschedule";
+import landingRouter from "./landing";
 
 const router: IRouter = Router();
 
+router.use(authRouter);
+router.use(adminRouter);
 router.use(healthRouter);
 router.use(dashboardRouter);
 router.use(categoriesRouter);
@@ -24,5 +31,8 @@ router.use(bookingsRouter);
 router.use(calendarRouter);
 router.use(invoicesRouter);
 router.use(bookingFilesRouter);
+router.use(dressCatalogRouter);
+router.use(rescheduleRouter);
+router.use(landingRouter);
 
 export default router;

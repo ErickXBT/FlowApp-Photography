@@ -60,7 +60,7 @@ router.delete("/files/:id", async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
-router.patch("/files/:id/selection", async (req, res): Promise<void> => {
+router.patch("/files/:id/select", async (req, res): Promise<void> => {
   const params = ToggleFileSelectionParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

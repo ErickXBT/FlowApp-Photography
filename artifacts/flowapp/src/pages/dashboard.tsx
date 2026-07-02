@@ -22,6 +22,13 @@ export default function Dashboard() {
     return <div className="p-8 text-destructive">Failed to load dashboard</div>;
   }
 
+  const totalBookings = summary.totalBookings ?? 0;
+  const upcomingShoots = summary.upcomingShoots ?? 0;
+  const totalRevenue = summary.totalRevenue ?? 0;
+  const outstandingAmount = summary.outstandingAmount ?? 0;
+  const recentBookings = summary.recentBookings ?? [];
+  const bookingsByStatus = summary.bookingsByStatus ?? [];
+
   return (
     <div className="p-8 space-y-8">
       <h1 className="text-3xl font-serif font-bold">Dashboard</h1>
@@ -32,7 +39,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Bookings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{summary.totalBookings}</div>
+            <div className="text-3xl font-bold">{totalBookings}</div>
           </CardContent>
         </Card>
         <Card>
@@ -40,7 +47,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Upcoming Shoots</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{summary.upcomingShoots}</div>
+            <div className="text-3xl font-bold text-primary">{upcomingShoots}</div>
           </CardContent>
         </Card>
         <Card>
@@ -48,7 +55,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{fmtIDR(summary.totalRevenue)}</div>
+            <div className="text-3xl font-bold">{fmtIDR(totalRevenue)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -56,7 +63,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Outstanding</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-destructive">{fmtIDR(summary.outstandingAmount)}</div>
+            <div className="text-3xl font-bold text-destructive">{fmtIDR(outstandingAmount)}</div>
           </CardContent>
         </Card>
       </div>
@@ -68,11 +75,11 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {summary.recentBookings.map(booking => (
+              {recentBookings.map(booking => (
                 <div key={booking.id} className="flex justify-between items-center p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div>
                     <div className="font-medium">{booking.clientName}</div>
-                    <div className="text-sm text-muted-foreground">{booking.packageName} • {new Date(booking.eventDate).toLocaleDateString()}</div>
+                    <div className="text-sm text-muted-foreground">{booking.packageName} • {booking.eventDate ? new Date(booking.eventDate).toLocaleDateString() : "TBD"}</div>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm uppercase px-2 py-1 bg-muted rounded-full text-xs font-semibold">{booking.status}</span>
@@ -82,7 +89,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
-              {summary.recentBookings.length === 0 && (
+              {recentBookings.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">No recent bookings</div>
               )}
             </div>
@@ -95,7 +102,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {summary.bookingsByStatus.map(status => (
+              {bookingsByStatus.map(status => (
                 <div key={status.status} className="flex justify-between items-center">
                   <span className="capitalize">{status.status.replace('_', ' ')}</span>
                   <span className="font-medium bg-muted px-2 py-1 rounded-md min-w-[2rem] text-center">{status.count}</span>

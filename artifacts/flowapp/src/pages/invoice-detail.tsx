@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "wouter";
+import { useRoute, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetInvoice,
@@ -24,8 +24,8 @@ const statusVariant: Record<string, string> = {
 };
 
 export default function InvoiceDetail() {
-  const params = useParams<{ id: string }>();
-  const id = Number(params.id);
+  const [match, params] = useRoute<{ id: string }>("/invoices/:id");
+  const id = Number(params?.id);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 

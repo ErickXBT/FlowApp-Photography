@@ -70,6 +70,9 @@ export default function Bookings() {
     return <div className="p-8 text-destructive">Failed to load bookings</div>;
   }
 
+  const clientOptions = Array.isArray(clients) ? clients : [];
+  const packageOptions = Array.isArray(packages) ? packages : [];
+
   return (
     <div className="p-8 space-y-8">
       <div className="flex justify-between items-center">
@@ -86,7 +89,7 @@ export default function Bookings() {
                 <Select value={form.clientId} onValueChange={(v) => setForm({ ...form, clientId: v })}>
                   <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
                   <SelectContent>
-                    {clients?.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}
+                    {clientOptions.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -95,7 +98,7 @@ export default function Bookings() {
                 <Select value={form.packageId} onValueChange={(v) => setForm({ ...form, packageId: v })}>
                   <SelectTrigger><SelectValue placeholder="Select package" /></SelectTrigger>
                   <SelectContent>
-                    {packages?.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name} — {fmtIDR(p.price)}</SelectItem>)}
+                    {packageOptions.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name} — {fmtIDR(p.price)}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

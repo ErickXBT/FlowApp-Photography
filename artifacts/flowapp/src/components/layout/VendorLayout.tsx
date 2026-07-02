@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Calendar, Users, Package, FileText, Camera, CreditCard, Menu } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { LayoutDashboard, Calendar, Users, Package, FileText, Camera, CreditCard, Menu, Activity, Settings, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -10,13 +11,17 @@ const navigation = [
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Packages", href: "/packages", icon: Package },
+  { name: "Dress Catalog", href: "/dress-catalog", icon: CreditCard },
+  { name: "Reschedule", href: "/reschedule-center", icon: Activity },
   { name: "Team", href: "/team", icon: Users },
   { name: "Invoices", href: "/invoices", icon: FileText },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function VendorLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
 
   const NavLinks = () => (
     <>
@@ -71,6 +76,11 @@ export function VendorLayout({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 px-4 flex flex-col gap-2">
           <NavLinks />
         </nav>
+        <div className="p-4 border-t border-[#374151]">
+          <Button variant="ghost" size="sm" onClick={logout} className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-900/20 text-xs px-2">
+            <LogOut className="h-4 w-4 mr-2" /> Logout
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "wouter";
+import { useRoute, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetBooking,
@@ -32,8 +32,8 @@ const statusOptions = Object.values(BookingStatus);
 const folderTypes = Object.values(FolderType);
 
 export default function BookingDetail() {
-  const params = useParams<{ id: string }>();
-  const id = Number(params.id);
+  const [match, params] = useRoute<{ id: string }>("/bookings/:id");
+  const id = Number(params?.id);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -85,6 +85,8 @@ export default function BookingDetail() {
       },
     },
   });
+
+  const clientPortalUrl = typeof window !== "undefined" ? `${window.location.origin}/client/bookings/${id}` : "";
 
   if (isLoading) {
     return (
@@ -211,8 +213,15 @@ export default function BookingDetail() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Delivery Files</CardTitle>
+        <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <CardTitle>Delivery Files</CardTitle>
+            {clientPortalUrl && (
+              <a href={clientPortalUrl} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline break-all">
+                Client portal link
+              </a>
+            )}
+          </div>
           <Dialog open={fileDialogOpen} onOpenChange={setFileDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm">Add File</Button>
