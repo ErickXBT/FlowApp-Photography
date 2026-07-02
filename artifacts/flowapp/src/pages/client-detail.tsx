@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { fmtIDR } from "@/lib/utils";
 
 export default function ClientDetail() {
   const params = useParams<{ id: string }>();
@@ -127,7 +128,7 @@ export default function ClientDetail() {
         <Card>
           <CardHeader><CardTitle>Summary</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Total Spent</span><span className="font-bold text-lg">${client.totalSpent.toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Total Spent</span><span className="font-bold text-lg">{fmtIDR(client.totalSpent)}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Bookings</span><span>{client.bookings.length}</span></div>
           </CardContent>
         </Card>
@@ -144,7 +145,7 @@ export default function ClientDetail() {
                   <div className="text-sm text-muted-foreground">{new Date(b.eventDate).toLocaleDateString()}</div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-medium">${b.totalAmount.toLocaleString()}</span>
+                  <span className="font-medium">{fmtIDR(b.totalAmount)}</span>
                   <Badge variant="secondary" className="capitalize">{b.status.replace("_", " ")}</Badge>
                 </div>
               </Link>

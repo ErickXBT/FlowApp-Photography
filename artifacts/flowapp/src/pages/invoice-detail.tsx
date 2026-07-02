@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { fmtIDR } from "@/lib/utils";
 
 const statusVariant: Record<string, string> = {
   unpaid: "bg-red-200 text-red-900",
@@ -75,14 +76,14 @@ export default function InvoiceDetail() {
             {invoice.lineItems.map((item, i) => (
               <div key={i} className="flex justify-between text-sm py-1 border-b last:border-0">
                 <span>{item.label}</span>
-                <span>${item.amount.toLocaleString()}</span>
+                <span>{fmtIDR(item.amount)}</span>
               </div>
             ))}
             <div className="pt-3 space-y-1">
-              <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>${invoice.subtotal.toLocaleString()}</span></div>
-              <div className="flex justify-between font-bold text-lg"><span>Total</span><span>${invoice.total.toLocaleString()}</span></div>
-              <div className="flex justify-between text-sm text-muted-foreground"><span>Paid</span><span>${invoice.paidAmount.toLocaleString()}</span></div>
-              <div className="flex justify-between font-medium"><span>Balance Due</span><span>${balance.toLocaleString()}</span></div>
+              <div className="flex justify-between text-sm text-muted-foreground"><span>Subtotal</span><span>{fmtIDR(invoice.subtotal)}</span></div>
+              <div className="flex justify-between font-bold text-lg"><span>Total</span><span>{fmtIDR(invoice.total)}</span></div>
+              <div className="flex justify-between text-sm text-muted-foreground"><span>Paid</span><span>{fmtIDR(invoice.paidAmount)}</span></div>
+              <div className="flex justify-between font-medium"><span>Balance Due</span><span>{fmtIDR(balance)}</span></div>
             </div>
           </CardContent>
         </Card>

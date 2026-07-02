@@ -13,12 +13,12 @@ import {
 
 const router: IRouter = Router();
 
-router.get("/team-members", async (_req, res): Promise<void> => {
+router.get("/team", async (_req, res): Promise<void> => {
   const teamMembers = await db.select().from(teamMembersTable).orderBy(teamMembersTable.name);
   res.json(ListTeamMembersResponse.parse(teamMembers));
 });
 
-router.post("/team-members", async (req, res): Promise<void> => {
+router.post("/team", async (req, res): Promise<void> => {
   const parsed = CreateTeamMemberBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -28,7 +28,7 @@ router.post("/team-members", async (req, res): Promise<void> => {
   res.status(201).json(CreateTeamMemberResponse.parse(member));
 });
 
-router.patch("/team-members/:id", async (req, res): Promise<void> => {
+router.patch("/team/:id", async (req, res): Promise<void> => {
   const params = UpdateTeamMemberParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -51,7 +51,7 @@ router.patch("/team-members/:id", async (req, res): Promise<void> => {
   res.json(UpdateTeamMemberResponse.parse(member));
 });
 
-router.delete("/team-members/:id", async (req, res): Promise<void> => {
+router.delete("/team/:id", async (req, res): Promise<void> => {
   const params = DeleteTeamMemberParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

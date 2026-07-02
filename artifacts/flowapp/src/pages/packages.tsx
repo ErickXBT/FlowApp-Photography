@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, Pencil, Plus } from "lucide-react";
+import { fmtIDR } from "@/lib/utils";
 
 export default function Packages() {
   return (
@@ -160,7 +161,7 @@ function PackagesTab() {
             </CardHeader>
             <CardContent className="space-y-2">
               {p.description && <p className="text-sm text-muted-foreground">{p.description}</p>}
-              <div className="text-2xl font-bold">${p.price.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{fmtIDR(p.price)}</div>
               <div className="text-sm text-muted-foreground">{p.includedEditedPhotos} edited photos • {p.estimatedDays} days</div>
               <div className="flex gap-2 pt-2">
                 <Button variant="outline" size="sm" onClick={() => openEdit(p)}><Pencil className="h-3 w-3 mr-1" /> Edit</Button>
@@ -235,7 +236,7 @@ function AddOnsTab() {
                   {a.description && <div className="text-sm text-muted-foreground">{a.description}</div>}
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-medium">${a.price.toLocaleString()}</span>
+                  <span className="font-medium">{fmtIDR(a.price)}</span>
                   <Button variant="ghost" size="icon" onClick={() => openEdit(a)}><Pencil className="h-4 w-4" /></Button>
                   <Button variant="ghost" size="icon" onClick={() => remove.mutate({ id: a.id })}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                 </div>

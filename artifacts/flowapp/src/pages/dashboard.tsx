@@ -2,6 +2,7 @@ import { useGetDashboardSummary } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
+import { fmtIDR } from "@/lib/utils";
 
 export default function Dashboard() {
   const { data: summary, isLoading, error } = useGetDashboardSummary();
@@ -47,7 +48,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">${summary.totalRevenue.toLocaleString()}</div>
+            <div className="text-3xl font-bold">{fmtIDR(summary.totalRevenue)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -55,7 +56,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-muted-foreground">Outstanding</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-destructive">${summary.outstandingAmount.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-destructive">{fmtIDR(summary.outstandingAmount)}</div>
           </CardContent>
         </Card>
       </div>

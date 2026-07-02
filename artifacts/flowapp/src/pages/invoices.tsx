@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { fmtIDR } from "@/lib/utils";
 
 const statusVariant: Record<string, string> = {
   unpaid: "bg-red-200 text-red-900",
@@ -43,8 +44,8 @@ export default function Invoices() {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="font-bold">${inv.total.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">Paid ${inv.paidAmount.toLocaleString()}</div>
+                    <div className="font-bold">{fmtIDR(inv.total)}</div>
+                    <div className="text-xs text-muted-foreground">Paid {fmtIDR(inv.paidAmount)}</div>
                   </div>
                   <Badge className={`capitalize ${statusVariant[inv.status] ?? ""}`}>{inv.status}</Badge>
                 </div>

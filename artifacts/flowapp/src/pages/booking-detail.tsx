@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2 } from "lucide-react";
+import { fmtIDR } from "@/lib/utils";
 
 const statusOptions = Object.values(BookingStatus);
 const folderTypes = Object.values(FolderType);
@@ -134,8 +135,8 @@ export default function BookingDetail() {
             <div className="flex justify-between"><span className="text-muted-foreground">Client</span><Link href={`/clients/${booking.client.id}`} className="font-medium text-primary hover:underline">{booking.client.name}</Link></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span>{booking.client.email}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">WhatsApp</span><span>{booking.client.whatsapp}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Package</span><span>{booking.package.name} (${booking.package.price.toLocaleString()})</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Total Amount</span><span className="font-bold">${booking.totalAmount.toLocaleString()}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Package</span><span>{booking.package.name} ({fmtIDR(booking.package.price)})</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Total Amount</span><span className="font-bold">{fmtIDR(booking.totalAmount)}</span></div>
             {booking.locationName && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Location</span>
@@ -195,8 +196,8 @@ export default function BookingDetail() {
             {booking.invoice ? (
               <>
                 <div className="flex justify-between"><span className="text-muted-foreground">Number</span><span className="font-medium">{booking.invoice.invoiceNumber}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Total</span><span>${booking.invoice.total.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Paid</span><span>${booking.invoice.paidAmount.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Total</span><span>{fmtIDR(booking.invoice.total)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Paid</span><span>{fmtIDR(booking.invoice.paidAmount)}</span></div>
                 <Badge variant="secondary" className="capitalize">{booking.invoice.status}</Badge>
                 <Button asChild variant="outline" className="w-full mt-2">
                   <Link href={`/invoices/${booking.invoice.id}`}>View Invoice</Link>

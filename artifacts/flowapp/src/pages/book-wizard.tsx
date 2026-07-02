@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { fmtIDR } from "@/lib/utils";
 
 const steps = ["Category", "Package", "Date & Location", "Your Info", "Team & Add-ons", "Review"];
 
@@ -108,7 +109,7 @@ export default function BookWizard() {
             <div className="flex justify-between"><span className="text-muted-foreground">Reference</span><span className="font-mono font-medium">#{bookingRef}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Package</span><span>{selectedPackage?.name}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span>{new Date(eventDate).toLocaleDateString()}</span></div>
-            <div className="flex justify-between font-semibold"><span>Total</span><span>${total.toLocaleString()}</span></div>
+            <div className="flex justify-between font-semibold"><span>Total</span><span>{fmtIDR(total)}</span></div>
           </CardContent>
         </Card>
         <p className="text-sm text-muted-foreground">
@@ -165,7 +166,7 @@ export default function BookWizard() {
                     {p.description && <div className="text-sm text-muted-foreground mt-1">{p.description}</div>}
                     <div className="text-xs text-muted-foreground mt-1">{p.includedEditedPhotos} edited photos • {p.estimatedDays} days</div>
                   </div>
-                  <div className="font-bold whitespace-nowrap">${p.price.toLocaleString()}</div>
+                  <div className="font-bold whitespace-nowrap">{fmtIDR(p.price)}</div>
                 </button>
               ))}
               {packages.length === 0 && <p className="text-muted-foreground text-sm">No packages available for this category.</p>}
@@ -254,7 +255,7 @@ export default function BookWizard() {
                           }
                         />
                         <span className="flex-1">{a.name}</span>
-                        <span className="font-medium">${a.price.toLocaleString()}</span>
+                        <span className="font-medium">{fmtIDR(a.price)}</span>
                       </label>
                     ))}
                   </div>
@@ -287,7 +288,7 @@ export default function BookWizard() {
                   </div>
                 </div>
               )}
-              <div className="pt-3 border-t flex justify-between font-bold text-lg"><span>Total</span><span>${total.toLocaleString()}</span></div>
+              <div className="pt-3 border-t flex justify-between font-bold text-lg"><span>Total</span><span>{fmtIDR(total)}</span></div>
               {(createClient.isError || createBooking.isError) && (
                 <p className="text-destructive text-sm">Something went wrong submitting your booking. Please try again.</p>
               )}
