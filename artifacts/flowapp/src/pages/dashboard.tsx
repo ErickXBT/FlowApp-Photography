@@ -137,34 +137,34 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-5 space-y-5">
+    <div className="p-6 space-y-6">
       {/* KPI Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map(card => (
-          <div key={card.label} className="bg-[#1e293b] rounded-xl border border-[#2d3748] px-4 py-3 flex items-center gap-3">
-            <card.icon className={`h-6 w-6 shrink-0 ${card.color}`} />
+          <div key={card.label} className="bg-[#1e293b] rounded-xl border border-[#2d3748] px-5 py-4 flex items-center gap-4">
+            <card.icon className={`h-8 w-8 shrink-0 ${card.color}`} />
             <div>
-              <div className="text-[10px] text-[#64748b] uppercase tracking-wide">{card.label}</div>
-              <div className={`font-bold text-sm mt-0.5 ${card.color}`}>{card.value}</div>
+              <div className="text-xs text-[#64748b] uppercase tracking-wide font-medium">{card.label}</div>
+              <div className={`font-bold text-lg mt-0.5 ${card.color}`}>{card.value}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* File Delivery Engine */}
-      <div className="bg-[#1e293b] rounded-xl border border-[#2d3748] p-4">
-        <div className="flex items-center gap-2 mb-1">
-          <FileText className="h-4 w-4 text-[#A3E635]" />
-          <span className="text-white font-semibold text-sm">File Delivery Engine (S3 / Cloudflare R2 Upload Emulator)</span>
+      <div className="bg-[#1e293b] rounded-xl border border-[#2d3748] p-5">
+        <div className="flex items-center gap-2 mb-1.5">
+          <FileText className="h-5 w-5 text-[#A3E635]" />
+          <span className="text-white font-semibold text-base">File Delivery Engine (S3 / Cloudflare R2 Upload Emulator)</span>
         </div>
-        <p className="text-xs text-[#64748b] mb-4">Gunakan form di bawah ini untuk mensimulasikan pengunggahan file foto (Raw / Edited) atau link video teaser langsung ke R2 Storage client.</p>
-        <form onSubmit={handleSendFile} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="space-y-1">
-            <label className="text-xs text-[#94a3b8]">Pilih Klien / Booking</label>
+        <p className="text-sm text-[#64748b] mb-5">Gunakan form di bawah ini untuk mensimulasikan pengunggahan file foto (Raw / Edited) atau link video teaser langsung ke R2 Storage client.</p>
+        <form onSubmit={handleSendFile} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-sm text-[#94a3b8]">Pilih Klien / Booking</label>
             <select
               value={selectedBookingId}
               onChange={e => setSelectedBookingId(e.target.value)}
-              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#A3E635]"
+              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#A3E635]"
             >
               <option value="">-- Pilih Booking --</option>
               {bookings.map(b => (
@@ -174,92 +174,92 @@ export default function Dashboard() {
               ))}
             </select>
           </div>
-          <div className="space-y-1">
-            <label className="text-xs text-[#94a3b8]">Kategori File</label>
+          <div className="space-y-1.5">
+            <label className="text-sm text-[#94a3b8]">Kategori File</label>
             <select
               value={fileCategory}
               onChange={e => setFileCategory(e.target.value)}
-              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#A3E635]"
+              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#A3E635]"
             >
               <option value="raw">Raw Photos (Untuk Diseleksi)</option>
               <option value="edited">Edited Photos (Final Retouch)</option>
               <option value="video">Cinematic Video Teaser (MP4)</option>
             </select>
           </div>
-          <div className="space-y-1">
-            <label className="text-xs text-[#94a3b8]">Nama File</label>
+          <div className="space-y-1.5">
+            <label className="text-sm text-[#94a3b8]">Nama File</label>
             <input
               value={fileName}
               onChange={e => setFileName(e.target.value)}
               placeholder="Contoh: DSC_4129.JPG"
-              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#A3E635]"
+              className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#A3E635]"
             />
           </div>
           <div className="md:col-span-3">
             <button
               type="submit"
               disabled={sending || !selectedBookingId || !fileName}
-              className="w-full bg-[#A3E635] hover:bg-[#84cc16] disabled:opacity-50 text-[#0f172a] font-bold text-sm rounded-lg py-2.5 flex items-center justify-center gap-2 transition-colors"
+              className="w-full bg-[#A3E635] hover:bg-[#84cc16] disabled:opacity-50 text-[#0f172a] font-bold text-sm rounded-lg py-3 flex items-center justify-center gap-2 transition-colors"
             >
               <FileText className="h-4 w-4" />
               {sending ? "Mengirim..." : "Kirim File Ke Klien"}
             </button>
-            {sendMsg && <p className="text-xs text-[#A3E635] mt-2">{sendMsg}</p>}
+            {sendMsg && <p className="text-sm text-[#A3E635] mt-2">{sendMsg}</p>}
           </div>
         </form>
       </div>
 
       {/* Booking Table */}
       <div className="bg-[#1e293b] rounded-xl border border-[#2d3748] overflow-hidden">
-        <div className="px-4 py-3 border-b border-[#2d3748]">
-          <h2 className="text-white font-semibold text-sm">Semua Booking Masuk</h2>
+        <div className="px-5 py-4 border-b border-[#2d3748]">
+          <h2 className="text-white font-semibold text-base">Semua Booking Masuk</h2>
         </div>
         <div className="overflow-x-auto">
           {bookingsLoading ? (
-            <div className="p-4 space-y-2">
-              {[1,2,3].map(i => <Skeleton key={i} className="h-12 bg-[#0f172a]" />)}
+            <div className="p-5 space-y-3">
+              {[1,2,3].map(i => <Skeleton key={i} className="h-14 bg-[#0f172a]" />)}
             </div>
           ) : (
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="text-[#64748b] border-b border-[#2d3748] bg-[#0f172a]/50">
-                  <th className="text-left px-4 py-3">Booking ID</th>
-                  <th className="text-left px-4 py-3">Detail Klien</th>
-                  <th className="text-left px-4 py-3">Tanggal Event</th>
-                  <th className="text-left px-4 py-3">Tim & Pakaian</th>
-                  <th className="text-left px-4 py-3">Total Transaksi</th>
-                  <th className="text-left px-4 py-3">Status Proyek</th>
-                  <th className="text-left px-4 py-3">Ganti Status</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Booking ID</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Detail Klien</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Tanggal Event</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Tim & Pakaian</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Total Transaksi</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Status Proyek</th>
+                  <th className="text-left px-5 py-3.5 font-medium">Ganti Status</th>
                 </tr>
               </thead>
               <tbody>
                 {bookings.map(b => (
                   <tr key={b.id} className="border-b border-[#2d3748] hover:bg-[#0f172a]/40 transition-colors">
-                    <td className="px-4 py-3 text-[#A3E635] font-mono font-medium">{b.bookingCode}</td>
-                    <td className="px-4 py-3">
-                      <div className="text-white font-medium">{b.clientName}</div>
-                      {b.clientWhatsapp && <div className="text-[#64748b]">{b.clientWhatsapp}</div>}
-                      {b.clientCity && <div className="text-[#64748b]">{b.clientCity}</div>}
+                    <td className="px-5 py-4 text-[#A3E635] font-mono font-medium">{b.bookingCode}</td>
+                    <td className="px-5 py-4">
+                      <div className="text-white font-semibold">{b.clientName}</div>
+                      {b.clientWhatsapp && <div className="text-[#64748b] text-xs mt-0.5">{b.clientWhatsapp}</div>}
+                      {b.clientCity && <div className="text-[#64748b] text-xs">{b.clientCity}</div>}
                     </td>
-                    <td className="px-4 py-3 text-[#94a3b8]">
+                    <td className="px-5 py-4 text-[#94a3b8]">
                       {b.eventDate ? new Date(b.eventDate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "TBD"}
                     </td>
-                    <td className="px-4 py-3 text-[#94a3b8]">
+                    <td className="px-5 py-4 text-[#94a3b8]">
                       {b.muaName && <div>MUA: {b.muaName}</div>}
                       {b.brideGaun && <div>Gaun: {b.brideGaun}</div>}
                       {!b.muaName && !b.brideGaun && <span className="text-[#475569]">—</span>}
                     </td>
-                    <td className="px-4 py-3 text-white font-medium">{fmtIDR(b.totalAmount)}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase ${STATUS_COLORS[b.status] ?? "bg-gray-500/20 text-gray-300 border-gray-500/30"}`}>
+                    <td className="px-5 py-4 text-white font-semibold">{fmtIDR(b.totalAmount)}</td>
+                    <td className="px-5 py-4">
+                      <span className={`px-2.5 py-1 rounded border text-xs font-bold uppercase ${STATUS_COLORS[b.status] ?? "bg-gray-500/20 text-gray-300 border-gray-500/30"}`}>
                         {STATUS_LABELS[b.status] ?? b.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       <select
                         value={b.status}
                         onChange={e => handleStatusChange(b.id, e.target.value)}
-                        className="bg-[#0f172a] border border-[#374151] text-white text-xs rounded px-2 py-1 focus:outline-none focus:border-[#A3E635]"
+                        className="bg-[#0f172a] border border-[#374151] text-white text-sm rounded px-2.5 py-1.5 focus:outline-none focus:border-[#A3E635]"
                       >
                         {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                       </select>
@@ -267,7 +267,7 @@ export default function Dashboard() {
                   </tr>
                 ))}
                 {bookings.length === 0 && (
-                  <tr><td colSpan={7} className="text-center py-10 text-[#475569]">Belum ada booking masuk.</td></tr>
+                  <tr><td colSpan={7} className="text-center py-12 text-[#475569]">Belum ada booking masuk.</td></tr>
                 )}
               </tbody>
             </table>
@@ -277,25 +277,25 @@ export default function Dashboard() {
 
       {/* Task Queue Editor */}
       {revisions.length > 0 && (
-        <div className="bg-[#1e293b] rounded-xl border border-[#2d3748] p-4">
-          <h2 className="text-white font-semibold text-sm mb-3">Task Queue Editor (Revisi Foto dari Klien)</h2>
-          <div className="space-y-2">
+        <div className="bg-[#1e293b] rounded-xl border border-[#2d3748] p-5">
+          <h2 className="text-white font-semibold text-base mb-4">Task Queue Editor (Revisi Foto dari Klien)</h2>
+          <div className="space-y-3">
             {revisions.map(r => (
-              <div key={r.id} className="flex items-start justify-between gap-4 bg-[#0f172a] rounded-lg p-3 border border-[#2d3748]">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded font-bold uppercase">PENDING REVISION</span>
-                    <span className="text-white text-xs font-medium">{r.fileName}</span>
-                    <span className="text-[#64748b] text-[10px]">(Booking ID: {r.bookingCode})</span>
+              <div key={r.id} className="flex items-start justify-between gap-4 bg-[#0f172a] rounded-lg p-4 border border-[#2d3748]">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2.5 py-1 rounded font-bold uppercase">PENDING REVISION</span>
+                    <span className="text-white text-sm font-medium">{r.fileName}</span>
+                    <span className="text-[#64748b] text-xs">(Booking ID: {r.bookingCode})</span>
                   </div>
-                  {r.note && <p className="text-[#94a3b8] text-xs">"{r.note}"</p>}
-                  <p className="text-[#475569] text-[10px]">Dikirim pada: {new Date().toLocaleDateString("id-ID")}</p>
+                  {r.note && <p className="text-[#94a3b8] text-sm">"{r.note}"</p>}
+                  <p className="text-[#475569] text-xs">Dikirim pada: {new Date().toLocaleDateString("id-ID")}</p>
                 </div>
                 <button
                   onClick={() => dismissRevision(r.id)}
-                  className="shrink-0 bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                  className="shrink-0 bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] text-sm font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5"
                 >
-                  <CheckCircle2 className="h-3 w-3" /> Tandai Selesai Edit
+                  <CheckCircle2 className="h-4 w-4" /> Tandai Selesai Edit
                 </button>
               </div>
             ))}
