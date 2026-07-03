@@ -25,7 +25,10 @@ export default function AdminDashboard() {
     Promise.all([
       fetch("/api/admin/stats", { credentials: "include" }).then(r => r.json()),
       fetch("/api/admin/tenants", { credentials: "include" }).then(r => r.json()),
-    ]).then(([s, t]) => { setStats(s); setTenants(t); }).finally(() => setLoadingData(false));
+    ]).then(([s, t]) => {
+      if (s && !s.error) setStats(s);
+      if (Array.isArray(t)) setTenants(t);
+    }).finally(() => setLoadingData(false));
   }, [user]);
 
   const suspend = async (id: number) => {
