@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "wouter";
 import {
   useListCategories,
   useListPackages,
@@ -121,6 +122,11 @@ export default function BookWizard() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-2xl space-y-8">
+      <div>
+        <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-white transition-colors">
+          <ChevronLeft className="h-4 w-4" /> Kembali ke Dashboard
+        </Link>
+      </div>
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-serif font-bold">Book a Session</h1>
         <p className="text-muted-foreground">A few quick steps and you're set.</p>
