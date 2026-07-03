@@ -3,6 +3,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import path from "path";
 import { pool } from "@workspace/db";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -34,6 +35,11 @@ app.use(
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// NOTE: /uploads is intentionally public for studio banners, profile photos, dress
+// catalog images, and gallery media displayed on public landing pages.
+// Sensitive client deliverable files (raw/edited photos) are served via the
+// authenticated /api/bookings/:id/files endpoint – do NOT store those here.
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use(
   session({

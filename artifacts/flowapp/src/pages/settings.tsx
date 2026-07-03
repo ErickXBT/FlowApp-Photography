@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { QrCode, Camera, Globe2, MessageCircle, Instagram, Link as LinkIcon } from "lucide-react";
+import { MessageCircle, Instagram, Link as LinkIcon, Trash2 } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface TenantProfile {
   id: number;
@@ -42,83 +43,58 @@ export default function Settings() {
 
   const loadProfile = async () => {
     const res = await fetch("/api/landing/me/profile", { credentials: "include" });
-    if (res.ok) {
-      const data = await res.json();
-      setProfile(data);
-    }
+    if (res.ok) setProfile(await res.json());
   };
 
   const loadGallery = async () => {
     const res = await fetch("/api/landing/me/catalog", { credentials: "include" });
-    if (res.ok) {
-      setGallery(await res.json());
-    }
+    if (res.ok) setGallery(await res.json());
     setGalleryLoading(false);
   };
 
   useEffect(() => {
-    if (!loading && user) {
-      loadProfile();
-      loadGallery();
-    }
+    if (!loading && user) { loadProfile(); loadGallery(); }
   }, [loading, user]);
 
   const handleSaveProfile = async () => {
     if (!profile) return;
     setSaving(true);
     const res = await fetch("/api/landing/me/profile", {
-      method: "PATCH",
-      credentials: "include",
+      method: "PATCH", credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profile),
     });
     const data = await res.json();
-    if (res.ok) {
-      setProfile(data);
-      setMessage("Profil berhasil disimpan.");
-      setTimeout(() => setMessage(null), 3000);
-    } else {
-      setMessage(data.error ?? "Gagal menyimpan profil.");
-    }
+    if (res.ok) { setProfile(data); setMessage("✓ Profil berhasil disimpan."); }
+    else setMessage(data.error ?? "Gagal menyimpan profil.");
     setSaving(false);
+    setTimeout(() => setMessage(null), 3000);
   };
 
   const handleCreateGalleryItem = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await fetch("/api/landing/me/catalog", {
-      method: "POST",
-      credentials: "include",
+      method: "POST", credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: itemForm.title,
-        type: itemForm.type,
-        url: itemForm.url,
-        thumbnailUrl: itemForm.thumbnailUrl,
-      }),
+      body: JSON.stringify(itemForm),
     });
     if (res.ok) {
-      const item = await res.json();
-      setGallery((current) => [item, ...current]);
+      const newItem = await res.json();
+      setGallery(cur => [newItem, ...cur]);
       setItemForm({ title: "", type: "photo", url: "", thumbnailUrl: "" });
-      setMessage("Gallery item ditambahkan.");
-      setTimeout(() => setMessage(null), 3000);
+      setMessage("✓ Gallery item ditambahkan."); setTimeout(() => setMessage(null), 3000);
     } else {
-      const error = await res.json();
-      setMessage(error.error ?? "Gagal menambahkan gallery item.");
+      const err = await res.json();
+      setMessage(err.error ?? "Gagal menambahkan gallery item.");
     }
   };
 
   const handleDeleteGalleryItem = async (id: number) => {
-    await fetch(`/api/landing/me/catalog/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    setGallery((current) => current.filter((item) => item.id !== id));
+    await fetch(`/api/landing/me/catalog/${id}`, { method: "DELETE", credentials: "include" });
+    setGallery(cur => cur.filter(i => i.id !== id));
   };
 
-  if (loading || !user) {
-    return <div className="min-h-screen bg-[#111827] p-6"><Skeleton className="h-8 w-64 mb-4" /><Skeleton className="h-72" /></div>;
-  }
+  if (loading || !user) return <div className="min-h-screen bg-[#0f172a] p-6"><Skeleton className="h-8 w-64 mb-4 bg-[#1e293b]" /><Skeleton className="h-72 bg-[#1e293b]" /></div>;
 
   const publicUrl = profile ? `${window.location.origin}/p/${profile.slug}` : "";
 
@@ -127,160 +103,181 @@ export default function Settings() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-white font-bold text-2xl">Vendor Settings</h1>
-          <p className="mt-2 text-gray-400 max-w-2xl">Atur profil publik tenant, QR code, dan katalog digital untuk landing page Anda.</p>
+          <p className="mt-1 text-[#64748b] text-sm">Atur profil publik tenant, QR code, dan katalog digital untuk landing page Anda.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-3xl border border-[#374151] bg-[#111827] p-4">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-400">QR Link</div>
-            <div className="mt-3 font-semibold text-white">{profile?.slug ? `/${profile.slug}` : "..."}</div>
+          <div className="rounded-2xl border border-[#2d3748] bg-[#111827] p-4">
+            <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-2">QR Link</div>
+            <div className="font-semibold text-white text-sm">{profile?.slug ? `/${profile.slug}` : "..."}</div>
           </div>
           {profile && (
-            <div className="rounded-3xl border border-[#374151] bg-[#111827] p-4">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gray-400">Live URL</div>
-              <a href={publicUrl} target="_blank" rel="noreferrer" className="mt-3 block text-sm font-semibold text-[#A3E635] hover:text-[#d9f99d] break-words">{publicUrl}</a>
+            <div className="rounded-2xl border border-[#2d3748] bg-[#111827] p-4">
+              <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-2">Live URL</div>
+              <a href={publicUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-[#A3E635] hover:text-[#d9f99d] break-all">{publicUrl}</a>
             </div>
           )}
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="bg-[#1F2937] border-[#374151]">
-          <CardHeader>
-            <CardTitle className="text-white">Profile & Branding</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Profile & Branding */}
+        <Card className="bg-[#1e293b] border-[#2d3748]">
+          <CardHeader><CardTitle className="text-white text-base">Profile & Branding</CardTitle></CardHeader>
+          <CardContent className="space-y-5">
             <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-gray-300">Studio Name</Label>
-                <Input value={profile?.studioName ?? ""} onChange={(e) => setProfile(profile ? { ...profile, studioName: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" />
+              <div className="space-y-1.5">
+                <Label className="text-[#94a3b8] text-xs">Studio Name</Label>
+                <Input value={profile?.studioName ?? ""} onChange={e => setProfile(p => p ? { ...p, studioName: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">CTA Text</Label>
-                <Input value={profile?.ctaText ?? ""} onChange={(e) => setProfile(profile ? { ...profile, ctaText: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" placeholder="Book now / Chat now / Request a quote" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-gray-300">Bio</Label>
-              <Textarea value={profile?.bio ?? ""} onChange={(e) => setProfile(profile ? { ...profile, bio: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" rows={4} />
-            </div>
-            <div className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-gray-300">Banner URL</Label>
-                <Input value={profile?.bannerUrl ?? ""} onChange={(e) => setProfile(profile ? { ...profile, bannerUrl: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">Profile Photo URL</Label>
-                <Input value={profile?.profilePhotoUrl ?? ""} onChange={(e) => setProfile(profile ? { ...profile, profilePhotoUrl: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" />
+              <div className="space-y-1.5">
+                <Label className="text-[#94a3b8] text-xs">CTA Text</Label>
+                <Input value={profile?.ctaText ?? ""} onChange={e => setProfile(p => p ? { ...p, ctaText: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="Booking Sekarang" />
               </div>
             </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-[#94a3b8] text-xs">Bio</Label>
+              <Textarea value={profile?.bio ?? ""} onChange={e => setProfile(p => p ? { ...p, bio: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" rows={4} />
+            </div>
+
+            {/* Banner Upload */}
+            <ImageUpload
+              label="Banner"
+              value={profile?.bannerUrl ?? ""}
+              onChange={url => setProfile(p => p ? { ...p, bannerUrl: url } : null)}
+              accept="image/*"
+            />
+
+            {/* Profile Photo Upload */}
+            <ImageUpload
+              label="Profile Photo"
+              value={profile?.profilePhotoUrl ?? ""}
+              onChange={url => setProfile(p => p ? { ...p, profilePhotoUrl: url } : null)}
+              accept="image/*"
+            />
+
             <div className="grid gap-4 lg:grid-cols-3">
-              <div className="space-y-2">
-                <Label className="text-gray-300">WhatsApp</Label>
-                <Input value={profile?.whatsapp ?? ""} onChange={(e) => setProfile(profile ? { ...profile, whatsapp: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" placeholder="0812xxxxxxx" />
+              <div className="space-y-1.5">
+                <Label className="text-[#94a3b8] text-xs">WhatsApp</Label>
+                <Input value={profile?.whatsapp ?? ""} onChange={e => setProfile(p => p ? { ...p, whatsapp: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="+62812xxxxxxx" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">Instagram</Label>
-                <Input value={profile?.instagram ?? ""} onChange={(e) => setProfile(profile ? { ...profile, instagram: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" placeholder="@studio" />
+              <div className="space-y-1.5">
+                <Label className="text-[#94a3b8] text-xs">Instagram</Label>
+                <Input value={profile?.instagram ?? ""} onChange={e => setProfile(p => p ? { ...p, instagram: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="@studio" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">Website</Label>
-                <Input value={profile?.website ?? ""} onChange={(e) => setProfile(profile ? { ...profile, website: e.target.value } : null)} className="bg-[#111827] border-[#4B5563] text-white" placeholder="https://" />
+              <div className="space-y-1.5">
+                <Label className="text-[#94a3b8] text-xs">Website</Label>
+                <Input value={profile?.website ?? ""} onChange={e => setProfile(p => p ? { ...p, website: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="https://" />
               </div>
             </div>
-            <Button onClick={handleSaveProfile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#1F2937] font-semibold" disabled={saving || !profile}>
-              {saving ? "Menyimpan..." : "Simpan Profil"}
-            </Button>
-            {message && <div className="text-sm text-[#A3E635]">{message}</div>}
+
+            <div className="flex items-center gap-3">
+              <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                {saving ? "Menyimpan..." : "Simpan Profil"}
+              </Button>
+              {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+            </div>
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="bg-[#1F2937] border-[#374151]">
-            <CardHeader>
-              <CardTitle className="text-white">Live Preview</CardTitle>
-            </CardHeader>
+        {/* Live Preview + QR + Gallery */}
+        <div className="space-y-5">
+          {/* Live Preview */}
+          <Card className="bg-[#1e293b] border-[#2d3748]">
+            <CardHeader><CardTitle className="text-white text-base">Live Preview</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-3xl overflow-hidden border border-[#374151] bg-[#111827]">
+              <div className="rounded-2xl overflow-hidden border border-[#2d3748] bg-[#111827]">
                 {profile?.bannerUrl ? (
-                  <img src={profile.bannerUrl} alt="Banner" className="h-40 w-full object-cover" />
+                  <img src={profile.bannerUrl} alt="Banner" className="h-36 w-full object-cover" />
                 ) : (
-                  <div className="flex h-40 items-center justify-center bg-[#111827] text-gray-500">Banner Preview</div>
+                  <div className="h-36 bg-[#1e293b] flex items-center justify-center text-[#475569] text-sm">Banner Preview</div>
                 )}
                 <div className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 overflow-hidden rounded-full bg-[#374151]">
-                      {profile?.profilePhotoUrl ? (
-                        <img src={profile.profilePhotoUrl} alt="Profile" className="h-full w-full object-cover" />
-                      ) : null}
+                  <div className="flex items-center gap-3">
+                    <div className="h-14 w-14 rounded-full bg-[#374151] overflow-hidden shrink-0">
+                      {profile?.profilePhotoUrl && <img src={profile.profilePhotoUrl} alt="Profile" className="h-full w-full object-cover" />}
                     </div>
                     <div>
-                      <div className="text-lg font-semibold text-white">{profile?.studioName ?? "Studio Anda"}</div>
-                      <div className="text-sm text-gray-400">{profile?.bio ?? "Deskripsi singkat studio Anda akan tampil di sini."}</div>
+                      <div className="font-semibold text-white text-sm">{profile?.studioName ?? "Studio Anda"}</div>
+                      <div className="text-xs text-[#64748b] line-clamp-2">{profile?.bio ?? "Deskripsi singkat studio Anda."}</div>
                     </div>
                   </div>
-                  <div className="mt-4 grid gap-3 text-sm text-gray-300">
-                    {profile?.whatsapp ? <div className="flex items-center gap-2"><MessageCircle className="h-4 w-4 text-[#A3E635]" /> WhatsApp: {profile.whatsapp}</div> : null}
-                    {profile?.instagram ? <div className="flex items-center gap-2"><Instagram className="h-4 w-4 text-[#A3E635]" /> Instagram: {profile.instagram}</div> : null}
-                    {profile?.website ? <div className="flex items-center gap-2"><LinkIcon className="h-4 w-4 text-[#A3E635]" /> Website: {profile.website}</div> : null}
+                  <div className="mt-3 space-y-1.5 text-xs text-[#94a3b8]">
+                    {profile?.whatsapp && <div className="flex items-center gap-2"><MessageCircle className="h-3.5 w-3.5 text-[#A3E635]" /> WhatsApp: {profile.whatsapp}</div>}
+                    {profile?.instagram && <div className="flex items-center gap-2"><Instagram className="h-3.5 w-3.5 text-[#A3E635]" /> Instagram: {profile.instagram}</div>}
+                    {profile?.website && <div className="flex items-center gap-2"><LinkIcon className="h-3.5 w-3.5 text-[#A3E635]" /> Website: {profile.website}</div>}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-sm text-gray-300">
-                <QrCode className="h-4 w-4 text-[#A3E635]" />
-                Scan di atas untuk akses cepat ke landing page Anda.
-              </div>
+              <p className="text-xs text-[#64748b]">Scan di atas untuk akses cepat ke landing page Anda.</p>
               {profile && (
-                <div className="rounded-3xl border border-[#374151] bg-[#111827] p-4">
-                  <QRCodeCanvas value={publicUrl} size={160} bgColor="#0F172A" fgColor="#A3E635" className="mx-auto" />
+                <div className="rounded-2xl border border-[#2d3748] bg-[#0f172a] p-4 flex justify-center">
+                  <QRCodeCanvas value={publicUrl} size={140} bgColor="#0F172A" fgColor="#A3E635" />
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-[#1F2937] border-[#374151]">
-            <CardHeader>
-              <CardTitle className="text-white">Landing Gallery</CardTitle>
-            </CardHeader>
+          {/* Landing Gallery */}
+          <Card className="bg-[#1e293b] border-[#2d3748]">
+            <CardHeader><CardTitle className="text-white text-base">Landing Gallery</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <form onSubmit={handleCreateGalleryItem} className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Judul</Label>
-                    <Input value={itemForm.title} onChange={(e) => setItemForm((cur) => ({ ...cur, title: e.target.value }))} className="bg-[#111827] border-[#4B5563] text-white" placeholder="Foto Prewedding" />
+                  <div className="space-y-1">
+                    <Label className="text-[#94a3b8] text-xs">Judul</Label>
+                    <Input value={itemForm.title} onChange={e => setItemForm(f => ({ ...f, title: e.target.value }))} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="Foto Prewedding" />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-300">Tipe</Label>
-                    <Input value={itemForm.type} onChange={(e) => setItemForm((cur) => ({ ...cur, type: e.target.value }))} className="bg-[#111827] border-[#4B5563] text-white" placeholder="photo / video" />
+                  <div className="space-y-1">
+                    <Label className="text-[#94a3b8] text-xs">Tipe</Label>
+                    <select
+                      value={itemForm.type}
+                      onChange={e => setItemForm(f => ({ ...f, type: e.target.value }))}
+                      className="w-full bg-[#0f172a] border border-[#374151] text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#A3E635]"
+                    >
+                      <option value="photo">photo</option>
+                      <option value="video">video</option>
+                    </select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Media URL</Label>
-                  <Input value={itemForm.url} onChange={(e) => setItemForm((cur) => ({ ...cur, url: e.target.value }))} className="bg-[#111827] border-[#4B5563] text-white" placeholder="https://..." required />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Thumbnail URL</Label>
-                  <Input value={itemForm.thumbnailUrl} onChange={(e) => setItemForm((cur) => ({ ...cur, thumbnailUrl: e.target.value }))} className="bg-[#111827] border-[#4B5563] text-white" placeholder="https://..." />
-                </div>
-                <Button type="submit" className="bg-[#A3E635] hover:bg-[#84cc16] text-[#1F2937] font-semibold">Tambah Gallery Item</Button>
+
+                {/* Media upload */}
+                <ImageUpload
+                  label="Media (Foto / Video)"
+                  value={itemForm.url}
+                  onChange={url => setItemForm(f => ({ ...f, url }))}
+                  accept={itemForm.type === "video" ? "video/*,image/*" : "image/*"}
+                />
+
+                {/* Thumbnail upload */}
+                <ImageUpload
+                  label="Thumbnail"
+                  value={itemForm.thumbnailUrl}
+                  onChange={url => setItemForm(f => ({ ...f, thumbnailUrl: url }))}
+                  accept="image/*"
+                />
+
+                <Button type="submit" disabled={!itemForm.url} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm w-full">
+                  Tambah Gallery Item
+                </Button>
               </form>
-              <Separator />
-              <div className="space-y-3">
-                {galleryLoading ? (
-                  <Skeleton className="h-24" />
-                ) : gallery.length === 0 ? (
-                  <div className="text-gray-500">Belum ada item gallery. Tambahkan di atas.</div>
+
+              <Separator className="bg-[#2d3748]" />
+
+              <div className="space-y-2">
+                {galleryLoading ? <Skeleton className="h-20 bg-[#0f172a]" /> : gallery.length === 0 ? (
+                  <p className="text-xs text-[#475569]">Belum ada item gallery. Tambahkan di atas.</p>
                 ) : (
-                  <div className="space-y-3">
-                    {gallery.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between gap-3 rounded-2xl border border-[#374151] bg-[#111827] p-3">
-                        <div>
-                          <div className="text-sm font-medium text-white">{item.title ?? item.type}</div>
-                          <div className="text-xs text-gray-400">{item.type} • {item.url}</div>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteGalleryItem(item.id)} className="text-red-400 hover:text-red-300">Hapus</Button>
+                  gallery.map(item => (
+                    <div key={item.id} className="flex items-center gap-3 rounded-xl border border-[#2d3748] bg-[#0f172a] p-3">
+                      {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="h-10 w-14 object-cover rounded" />}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-white truncate">{item.title ?? item.type}</div>
+                        <div className="text-[10px] text-[#64748b]">{item.type} • {item.url.split("/").pop()}</div>
                       </div>
-                    ))}
-                  </div>
+                      <button onClick={() => handleDeleteGalleryItem(item.id)} className="text-red-400 hover:text-red-300 p-1"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                  ))
                 )}
               </div>
             </CardContent>

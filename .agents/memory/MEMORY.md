@@ -1,2 +1,5 @@
 - [Admin router auth bug](admin-router-auth-bug.md) — router.use(middleware) without path prefix in a sub-router blocks ALL requests through the main router, not just the sub-router's own routes.
 - [API client credentials](api-client-credentials.md) — custom-fetch must default credentials:"include" for session cookie auth to work with generated hooks.
+- [Reschedule backend contract](reschedule-contract.md) — /api/reschedule-requests expects { bookingId, oldDate, newDate, reason }; frontend must pass both dates.
+- [Uploads public access](uploads-security.md) — /uploads is intentionally public (banners, profile photos, dress catalog, gallery). Sensitive client files must use /api/bookings/:id/files (auth-protected).
+- [API type gaps](api-type-gaps.md) — BookingDetail has no bookingCode/muaName/hairStylistName/brideGaun/groomGaun fields; use BK-{id} for display and booking.teamMembers[] for crew. Invoice has no addOnsTotal; compute from booking.addOns[].

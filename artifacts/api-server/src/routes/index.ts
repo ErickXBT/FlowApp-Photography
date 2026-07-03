@@ -15,6 +15,7 @@ import adminRouter from "./admin";
 import dressCatalogRouter from "./dress-catalog";
 import rescheduleRouter from "./reschedule";
 import landingRouter from "./landing";
+import uploadRouter from "./upload";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use(bookingFilesRouter);
 router.use(dressCatalogRouter);
 router.use(rescheduleRouter);
 router.use(landingRouter);
+router.use(uploadRouter);
 
 export default router;
