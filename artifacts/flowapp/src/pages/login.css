@@ -1,0 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a 0%, #111827 50%, #1a2332 100%);
+  font-family: 'Nunito', sans-serif;
+  padding: 20px;
+  gap: 28px;
+}
+
+/* ── Container ── */
+.cont {
+  overflow: hidden;
+  position: relative;
+  width: 900px;
+  height: 540px;
+  background: #1e293b;
+  border-radius: 20px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(163, 230, 53, 0.08);
+}
+
+/* ── Sign-in form (left, 640px wide) ── */
+.cont .form {
+  position: relative;
+  width: 640px;
+  height: 100%;
+  padding: 50px 60px;
+  transition: transform 1.2s ease-in-out;
+  background: #1e293b;
+}
+
+.cont .form h2 {
+  width: 100%;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+}
+
+.cont .form .form-sub {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+/* ── Labels & Inputs ── */
+.cont .form label {
+  display: block;
+  width: 280px;
+  margin: 18px auto 0;
+  text-align: left;
+}
+
+.cont .form label span {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cont .form input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 15px;
+  color: #f1f5f9;
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1.5px solid rgba(100, 116, 139, 0.4);
+  background: transparent;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  transition: border-color 0.3s;
+}
+
+.cont .form input:focus {
+  border-bottom-color: #a3e635;
+}
+
+.cont .form input::placeholder {
+  color: #475569;
+}
+
+/* ── Submit button ── */
+.cont .form .submit {
+  display: block;
+  margin: 28px auto 0;
+  width: 280px;
+  height: 42px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  background: linear-gradient(90deg, #a3e635, #84cc16);
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: box-shadow 0.3s, transform 0.2s;
+  box-shadow: 0 4px 20px rgba(163, 230, 53, 0.3);
+}
+
+.cont .form .submit:hover {
+  box-shadow: 0 6px 28px rgba(163, 230, 53, 0.5);
+  transform: translateY(-1px);
+}
+
+.cont .form .submit:active {
+  transform: translateY(0);
+}
+
+.cont .form .submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Error message ── */
+.cont .form .error-msg {
+  width: 280px;
+  margin: 12px auto 0;
+  font-size: 12px;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+/* ── Sub-container (slides left on s-signup) ── */
+.sub-cont {
+  overflow: hidden;
+  position: absolute;
+  left: 640px;
+  top: 0;
+  width: 900px;
+  height: 100%;
+  padding-left: 260px;
+  background: #1e293b;
+  transition: transform 1.2s ease-in-out;
+}
+
+.cont.s-signup .sub-cont {
+  transform: translate3d(-640px, 0, 0);
+}
+
+/* ── Image / branding panel ── */
+.img {
+  overflow: hidden;
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  padding-top: 300px;
+}
+
+.img::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 900px;
+  height: 100%;
+  background: linear-gradient(150deg, #a3e635 0%, #65a30d 60%, #3f6212 100%);
+  transition: transform 1.2s ease-in-out;
+}
+
+.img::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* subtle dark overlay at bottom for depth */
+  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.15));
+}
+
+.cont.s-signup .img::before {
+  transform: translate3d(640px, 0, 0);
+}
+
+/* ── Branding mark on panel ── */
+.img .brand-mark {
+  z-index: 3;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.img .brand-mark .brand-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(15, 23, 42, 0.25);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img .brand-mark .brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.img .brand-mark .brand-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* ── Panel text (animated) ── */
+.img-text {
+  z-index: 3;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-60%);
+  width: 100%;
+  padding: 0 24px;
+  text-align: center;
+  transition: transform 1.2s ease-in-out, opacity 0.8s ease-in-out;
+}
+
+.img-text h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.img-text p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+/* m-up = shown on sign-in state, hides on s-signup */
+.cont.s-signup .img-text.m-up {
+  transform: translateY(-60%) translateX(520px);
+  opacity: 0;
+}
+
+/* m-in = shown on sign-up state, hidden by default */
+.img-text.m-in {
+  transform: translateY(-60%) translateX(-520px);
+  opacity: 0;
+}
+
+.cont.s-signup .img-text.m-in {
+  transform: translateY(-60%) translateX(0);
+  opacity: 1;
+}
+
+/* ── Toggle button ── */
+.img-btn {
+  overflow: hidden;
+  z-index: 3;
+  position: relative;
+  width: 120px;
+  height: 38px;
+  margin: 0 auto;
+  background: transparent;
+  color: #0f172a;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  border: none;
+  outline: none;
+}
+
+.img-btn::after {
+  content: '';
+  z-index: 2;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(15, 23, 42, 0.6);
+  border-radius: 30px;
+  transition: border-color 0.3s;
+}
+
+.img-btn:hover::after {
+  border-color: #0f172a;
+}
+
+.img-btn span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  transition: transform 1.2s ease-in-out;
+}
+
+.img-btn span.m-in {
+  transform: translateY(-72px);
+}
+
+.cont.s-signup .img-btn span.m-in {
+  transform: translateY(0);
+}
+
+.cont.s-signup .img-btn span.m-up {
+  transform: translateY(72px);
+}
+
+/* ── Sign-in form animation ── */
+.sign-in {
+  padding-top: 55px;
+  transition-timing-function: ease-out;
+}
+
+.cont.s-signup .sign-in {
+  transition-timing-function: ease-in-out;
+  transition-duration: 1.2s;
+  transform: translate3d(640px, 0, 0);
+}
+
+/* ── Sign-up form animation ── */
+.sign-up {
+  transform: translate3d(-900px, 0, 0);
+  padding-top: 30px;
+}
+
+.cont.s-signup .sign-up {
+  transform: translate3d(0, 0, 0);
+}
+
+/* ── Demo accounts bar ── */
+.demo-bar {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+.demo-bar strong {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.demo-bar .demo-cred {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.demo-bar .demo-cred .role {
+  font-weight: 700;
+  color: #a3e635;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.demo-bar .demo-cred .creds {
+  color: #94a3b8;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .cont {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    min-height: 520px;
+    border-radius: 16px;
+  }
+
+  .cont .form {
+    width: 100%;
+    padding: 40px 32px;
+  }
+
+  .sub-cont {
+    display: none;
+  }
+
+  .cont.s-signup .sign-in {
+    transform: translateX(110%);
+  }
+
+  .sign-up {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: translateX(-110%);
+  }
+
+  .cont.s-signup .sign-up {
+    transform: translateX(0);
+  }
+
+  .mobile-toggle {
+    display: block !important;
+  }
+
+  .demo-bar {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
+/* Mobile toggle button (shown only on small screen) */
+.mobile-toggle {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.mobile-toggle button {
+  background: none;
+  border: none;
+  color: #a3e635;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

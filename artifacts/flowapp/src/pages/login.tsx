@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Camera } from "lucide-react";
+import "./login.css";
 
 export default function Login() {
   const { login, register, user, loading } = useAuth();
   const [, navigate] = useLocation();
-  const [isRegister, setIsRegister] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  // Sign-in state
+  const [siEmail, setSiEmail] = useState("");
+  const [siPassword, setSiPassword] = useState("");
+  const [siError, setSiError] = useState("");
+  const [siLoading, setSiLoading] = useState(false);
+
+  // Sign-up state
+  const [suName, setSuName] = useState("");
+  const [suEmail, setSuEmail] = useState("");
+  const [suPassword, setSuPassword] = useState("");
+  const [suConfirm, setSuConfirm] = useState("");
+  const [suError, setSuError] = useState("");
+  const [suLoading, setSuLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && user) {
@@ -24,137 +29,187 @@ export default function Login() {
     }
   }, [user, loading, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSubmitting(true);
+    setSiError("");
+    setSiLoading(true);
     try {
-      if (isRegister) {
-        if (password !== confirmPassword) {
-          throw new Error("Password dan konfirmasi password harus sama");
-        }
-        await register(name, email, password);
-      } else {
-        await login(email, password);
-      }
+      await login(siEmail, siPassword);
     } catch (err: any) {
-      setError(err.message ?? (isRegister ? "Registrasi gagal." : "Login gagal. Periksa email dan password Anda."));
+      setSiError(err.message ?? "Login gagal. Periksa email dan password.");
     } finally {
-      setSubmitting(false);
+      setSiLoading(false);
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSuError("");
+    if (suPassword !== suConfirm) {
+      setSuError("Password dan konfirmasi tidak cocok.");
+      return;
+    }
+    setSuLoading(true);
+    try {
+      await register(suName, suEmail, suPassword);
+    } catch (err: any) {
+      setSuError(err.message ?? "Registrasi gagal.");
+    } finally {
+      setSuLoading(false);
+    }
+  };
+
+  const toggle = () => setIsSignUp((v) => !v);
+
   return (
-    <div className="min-h-screen bg-[#1F2937] flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="bg-[#A3E635] rounded-lg p-2">
-              <Camera className="h-6 w-6 text-[#1F2937]" />
+    <div className="login-page">
+      {/* ── Main animated container ── */}
+      <div className={`cont${isSignUp ? " s-signup" : ""}`}>
+
+        {/* ── Sign In form (left panel) ── */}
+        <div className="form sign-in">
+          <h2>Masuk</h2>
+          <p className="form-sub">Selamat datang kembali di FlowApp</p>
+
+          <form onSubmit={handleSignIn}>
+            <label>
+              <span>Email</span>
+              <input
+                type="email"
+                value={siEmail}
+                onChange={(e) => setSiEmail(e.target.value)}
+                placeholder="email@studio.id"
+                autoComplete="email"
+                required
+              />
+            </label>
+            <label>
+              <span>Password</span>
+              <input
+                type="password"
+                value={siPassword}
+                onChange={(e) => setSiPassword(e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+              />
+            </label>
+            {siError && <p className="error-msg">{siError}</p>}
+            <button type="submit" className="submit" disabled={siLoading}>
+              {siLoading ? "Memproses…" : "Masuk"}
+            </button>
+          </form>
+        </div>
+
+        {/* ── Sub-container: image panel + sign-up form ── */}
+        <div className="sub-cont">
+
+          {/* ── Sliding image / branding panel ── */}
+          <div className="img">
+            {/* Brand mark */}
+            <div className="brand-mark">
+              <div className="brand-icon">
+                <Camera size={26} color="#0f172a" strokeWidth={2.5} />
+              </div>
+              <span className="brand-name">FlowApp</span>
+              <span className="brand-tag">Studio SaaS</span>
             </div>
-            <span className="text-3xl font-serif font-bold text-white">FlowApp</span>
-            <span className="text-xs text-[#A3E635] font-medium border border-[#A3E635] rounded px-1">SaaS</span>
+
+            {/* Text for sign-in state */}
+            <div className="img-text m-up">
+              <h2>Belum punya akun?</h2>
+              <p>Daftar sekarang dan kelola studio foto & MUA Anda dengan lebih profesional.</p>
+            </div>
+
+            {/* Text for sign-up state */}
+            <div className="img-text m-in">
+              <h2>Sudah bergabung?</h2>
+              <p>Masuk dan lanjutkan mengelola booking, klien, dan invoice Anda.</p>
+            </div>
+
+            {/* Toggle button */}
+            <button className="img-btn" type="button" onClick={toggle}>
+              <span className="m-up">Daftar</span>
+              <span className="m-in">Masuk</span>
+            </button>
           </div>
-          <p className="text-gray-400 text-sm">Platform manajemen studio foto & MUA profesional</p>
-        </div>
 
-        <Card className="bg-[#374151] border-[#4B5563]">
-          <CardHeader>
-            <CardTitle className="text-white text-xl">
-              {isRegister ? "Daftar Akun Baru" : "Masuk ke Dashboard"}
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              {isRegister
-                ? "Buat akun vendor baru untuk mulai menggunakan FlowApp"
-                : "Masukkan email dan password akun Anda"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {isRegister && (
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Nama Lengkap</Label>
-                  <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Nama Anda"
-                    className="bg-[#1F2937] border-[#4B5563] text-white placeholder:text-gray-500 focus:border-[#A3E635]"
-                    required
-                  />
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label className="text-gray-300">Email</Label>
-                <Input
+          {/* ── Sign Up form ── */}
+          <div className="form sign-up">
+            <h2>Buat Akun</h2>
+            <p className="form-sub">Mulai kelola studio Anda bersama FlowApp</p>
+
+            <form onSubmit={handleSignUp}>
+              <label>
+                <span>Nama Lengkap</span>
+                <input
+                  type="text"
+                  value={suName}
+                  onChange={(e) => setSuName(e.target.value)}
+                  placeholder="Nama studio / Anda"
+                  autoComplete="name"
+                  required
+                />
+              </label>
+              <label>
+                <span>Email</span>
+                <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={suEmail}
+                  onChange={(e) => setSuEmail(e.target.value)}
                   placeholder="email@studio.id"
-                  className="bg-[#1F2937] border-[#4B5563] text-white placeholder:text-gray-500 focus:border-[#A3E635]"
+                  autoComplete="email"
                   required
                 />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-gray-300">Password</Label>
-                <Input
+              </label>
+              <label>
+                <span>Password</span>
+                <input
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="bg-[#1F2937] border-[#4B5563] text-white placeholder:text-gray-500 focus:border-[#A3E635]"
+                  value={suPassword}
+                  onChange={(e) => setSuPassword(e.target.value)}
+                  placeholder="Min. 8 karakter"
+                  autoComplete="new-password"
                   required
                 />
-              </div>
-              {isRegister && (
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Konfirmasi Password</Label>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="bg-[#1F2937] border-[#4B5563] text-white placeholder:text-gray-500 focus:border-[#A3E635]"
-                    required
-                  />
-                </div>
-              )}
-              {error && (
-                <p className="text-red-400 text-sm bg-red-900/20 border border-red-800 rounded p-2">{error}</p>
-              )}
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-[#A3E635] hover:bg-[#84cc16] text-[#1F2937] font-semibold"
-              >
-                {submitting ? "Memproses..." : isRegister ? "Daftar" : "Masuk"}
-              </Button>
+              </label>
+              <label>
+                <span>Konfirmasi Password</span>
+                <input
+                  type="password"
+                  value={suConfirm}
+                  onChange={(e) => setSuConfirm(e.target.value)}
+                  placeholder="Ulangi password"
+                  autoComplete="new-password"
+                  required
+                />
+              </label>
+              {suError && <p className="error-msg">{suError}</p>}
+              <button type="submit" className="submit" disabled={suLoading}>
+                {suLoading ? "Mendaftar…" : "Daftar Sekarang"}
+              </button>
             </form>
-          </CardContent>
-        </Card>
-
-        <div className="text-center text-sm text-gray-400">
-          {isRegister ? (
-            <button
-              type="button"
-              onClick={() => setIsRegister(false)}
-              className="text-[#A3E635] underline"
-            >
-              Sudah punya akun? Masuk
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsRegister(true)}
-              className="text-[#A3E635] underline"
-            >
-              Belum punya akun? Daftar sekarang
-            </button>
-          )}
+          </div>
         </div>
-        <div className="text-center text-gray-400 space-y-1 text-xs">
-          <p>Demo accounts:</p>
-          <p>Super Admin: <span className="text-[#A3E635]">admin@flowapp.id</span> / admin123</p>
-          <p>Vendor: <span className="text-[#A3E635]">vendor@senja.id</span> / vendor123</p>
+      </div>
+
+      {/* ── Mobile-only toggle ── */}
+      <div className="mobile-toggle">
+        <button type="button" onClick={toggle}>
+          {isSignUp ? "Sudah punya akun? Masuk" : "Belum punya akun? Daftar sekarang"}
+        </button>
+      </div>
+
+      {/* ── Demo accounts ── */}
+      <div className="demo-bar">
+        <strong>Demo:</strong>
+        <div className="demo-cred">
+          <span className="role">Vendor</span>
+          <span className="creds">vendor@senja.id / vendor123</span>
+        </div>
+        <div className="demo-cred">
+          <span className="role">Admin</span>
+          <span className="creds">admin@flowapp.id / admin123</span>
         </div>
       </div>
     </div>
