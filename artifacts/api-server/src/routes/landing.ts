@@ -26,9 +26,58 @@ router.get("/landing/me/profile", requireAuth, async (req, res) => {
 router.patch("/landing/me/profile", requireAuth, async (req, res) => {
   const tenantId = req.session.tenantId;
   if (!tenantId) { res.status(400).json({ error: "No tenant" }); return; }
-  const { bio, profilePhotoUrl, bannerUrl, whatsapp, instagram, website, ctaText, studioName } = req.body as {
+  const {
+    bio,
+    profilePhotoUrl,
+    bannerUrl,
+    whatsapp,
+    instagram,
+    website,
+    tiktok,
+    youtube,
+    ctaText,
+    studioName,
+    defaultWhatsappAdmin,
+    defaultMaxPhotos,
+    defaultPilihFotoPassword,
+    defaultDownloadFotoPassword,
+    defaultSamePasswordDownload,
+    defaultSamePasswordTambahan,
+    defaultSamePasswordCetak,
+    defaultDetectSubfolder,
+    defaultPilihFotoEnabled,
+    defaultDownloadFotoEnabled,
+    defaultTambahanFotoEnabled,
+    defaultCetakFotoEnabled,
+    defaultPilihFotoDuration,
+    defaultDownloadDuration,
+    customClientWelcomeMsg,
+    dashboardDurationDisplay,
+    seoMetaTitle,
+    seoMetaDesc,
+    seoKeywords
+  } = req.body as {
     bio?: string; profilePhotoUrl?: string; bannerUrl?: string;
-    whatsapp?: string; instagram?: string; website?: string; ctaText?: string; studioName?: string;
+    whatsapp?: string; instagram?: string; website?: string; tiktok?: string; youtube?: string; ctaText?: string; studioName?: string;
+    defaultWhatsappAdmin?: string;
+    defaultMaxPhotos?: number;
+    defaultPilihFotoPassword?: string;
+    defaultDownloadFotoPassword?: string;
+    defaultSamePasswordDownload?: boolean;
+    defaultSamePasswordTambahan?: boolean;
+    defaultSamePasswordCetak?: boolean;
+    defaultDetectSubfolder?: boolean;
+    defaultPilihFotoEnabled?: boolean;
+    defaultDownloadFotoEnabled?: boolean;
+    defaultTambahanFotoEnabled?: boolean;
+    defaultCetakFotoEnabled?: boolean;
+    defaultPilihFotoDuration?: string;
+    defaultDownloadDuration?: string;
+    customClientWelcomeMsg?: string;
+    dashboardDurationDisplay?: string;
+    seoMetaTitle?: string;
+    seoMetaDesc?: string;
+    seoKeywords?: string;
   };
   const [updated] = await db.update(tenants).set({
     ...(bio !== undefined && { bio }),
@@ -37,8 +86,29 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     ...(whatsapp !== undefined && { whatsapp }),
     ...(instagram !== undefined && { instagram }),
     ...(website !== undefined && { website }),
+    ...(tiktok !== undefined && { tiktok }),
+    ...(youtube !== undefined && { youtube }),
     ...(ctaText !== undefined && { ctaText }),
     ...(studioName !== undefined && { studioName }),
+    ...(defaultWhatsappAdmin !== undefined && { defaultWhatsappAdmin }),
+    ...(defaultMaxPhotos !== undefined && { defaultMaxPhotos }),
+    ...(defaultPilihFotoPassword !== undefined && { defaultPilihFotoPassword }),
+    ...(defaultDownloadFotoPassword !== undefined && { defaultDownloadFotoPassword }),
+    ...(defaultSamePasswordDownload !== undefined && { defaultSamePasswordDownload }),
+    ...(defaultSamePasswordTambahan !== undefined && { defaultSamePasswordTambahan }),
+    ...(defaultSamePasswordCetak !== undefined && { defaultSamePasswordCetak }),
+    ...(defaultDetectSubfolder !== undefined && { defaultDetectSubfolder }),
+    ...(defaultPilihFotoEnabled !== undefined && { defaultPilihFotoEnabled }),
+    ...(defaultDownloadFotoEnabled !== undefined && { defaultDownloadFotoEnabled }),
+    ...(defaultTambahanFotoEnabled !== undefined && { defaultTambahanFotoEnabled }),
+    ...(defaultCetakFotoEnabled !== undefined && { defaultCetakFotoEnabled }),
+    ...(defaultPilihFotoDuration !== undefined && { defaultPilihFotoDuration }),
+    ...(defaultDownloadDuration !== undefined && { defaultDownloadDuration }),
+    ...(customClientWelcomeMsg !== undefined && { customClientWelcomeMsg }),
+    ...(dashboardDurationDisplay !== undefined && { dashboardDurationDisplay }),
+    ...(seoMetaTitle !== undefined && { seoMetaTitle }),
+    ...(seoMetaDesc !== undefined && { seoMetaDesc }),
+    ...(seoKeywords !== undefined && { seoKeywords }),
   }).where(eq(tenants.id, tenantId)).returning();
   res.json(updated);
 });

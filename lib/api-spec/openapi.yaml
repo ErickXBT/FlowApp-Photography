@@ -947,8 +947,6 @@ components:
           clientId,
           clientName,
           categoryId,
-          packageId,
-          packageName,
           eventDate,
           status,
           totalAmount,
@@ -965,9 +963,9 @@ components:
         categoryId:
           type: ["integer", "null"]
         packageId:
-          type: integer
+          type: ["integer", "null"]
         packageName:
-          type: string
+          type: ["string", "null"]
         eventDate:
           type: string
           format: date-time
@@ -985,13 +983,39 @@ components:
           $ref: "#/components/schemas/ClientOrigin"
         specialRequest:
           type: ["string", "null"]
+        googleDriveLink:
+          type: ["string", "null"]
+        detectSubfolder:
+          type: boolean
+        whatsappClient:
+          type: ["string", "null"]
+        whatsappAdmin:
+          type: ["string", "null"]
+        maxPhotos:
+          type: integer
+        pilihFotoEnabled:
+          type: boolean
+        downloadFotoEnabled:
+          type: boolean
+        pilihFotoDuration:
+          type: string
+        downloadFotoDuration:
+          type: string
+        pilihFotoPassword:
+          type: ["string", "null"]
+        downloadFotoPassword:
+          type: ["string", "null"]
+        pilihFotoTambahanEnabled:
+          type: boolean
+        pilihFotoCetakEnabled:
+          type: boolean
         createdAt:
           type: string
           format: date-time
 
     BookingInput:
       type: object
-      required: [clientId, packageId, eventDate]
+      required: [clientId, eventDate]
       properties:
         clientId:
           type: integer
@@ -1024,6 +1048,32 @@ components:
           type: array
           items:
             type: integer
+        googleDriveLink:
+          type: string
+        detectSubfolder:
+          type: boolean
+        whatsappClient:
+          type: string
+        whatsappAdmin:
+          type: string
+        maxPhotos:
+          type: integer
+        pilihFotoEnabled:
+          type: boolean
+        downloadFotoEnabled:
+          type: boolean
+        pilihFotoDuration:
+          type: string
+        downloadFotoDuration:
+          type: string
+        pilihFotoPassword:
+          type: string
+        downloadFotoPassword:
+          type: string
+        pilihFotoTambahanEnabled:
+          type: boolean
+        pilihFotoCetakEnabled:
+          type: boolean
 
     BookingUpdate:
       type: object
@@ -1057,6 +1107,32 @@ components:
           type: array
           items:
             type: integer
+        googleDriveLink:
+          type: string
+        detectSubfolder:
+          type: boolean
+        whatsappClient:
+          type: string
+        whatsappAdmin:
+          type: string
+        maxPhotos:
+          type: integer
+        pilihFotoEnabled:
+          type: boolean
+        downloadFotoEnabled:
+          type: boolean
+        pilihFotoDuration:
+          type: string
+        downloadFotoDuration:
+          type: string
+        pilihFotoPassword:
+          type: string
+        downloadFotoPassword:
+          type: string
+        pilihFotoTambahanEnabled:
+          type: boolean
+        pilihFotoCetakEnabled:
+          type: boolean
 
     BookingStatusUpdate:
       type: object

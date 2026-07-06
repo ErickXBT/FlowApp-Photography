@@ -14,7 +14,9 @@ import {
 
 export async function shapeBookingListItem(booking: Booking) {
   const [client] = await db.select().from(clientsTable).where(eq(clientsTable.id, booking.clientId));
-  const [pkg] = await db.select().from(packagesTable).where(eq(packagesTable.id, booking.packageId));
+  const [pkg] = booking.packageId
+    ? await db.select().from(packagesTable).where(eq(packagesTable.id, booking.packageId))
+    : [null];
   return {
     id: booking.id,
     clientId: booking.clientId,
@@ -30,6 +32,19 @@ export async function shapeBookingListItem(booking: Booking) {
     totalAmount: Number(booking.totalAmount),
     clientOrigin: booking.clientOrigin,
     specialRequest: booking.specialRequest,
+    googleDriveLink: booking.googleDriveLink,
+    detectSubfolder: booking.detectSubfolder,
+    whatsappClient: booking.whatsappClient,
+    whatsappAdmin: booking.whatsappAdmin,
+    maxPhotos: booking.maxPhotos,
+    pilihFotoEnabled: booking.pilihFotoEnabled,
+    downloadFotoEnabled: booking.downloadFotoEnabled,
+    pilihFotoDuration: booking.pilihFotoDuration,
+    downloadFotoDuration: booking.downloadFotoDuration,
+    pilihFotoPassword: booking.pilihFotoPassword,
+    downloadFotoPassword: booking.downloadFotoPassword,
+    pilihFotoTambahanEnabled: booking.pilihFotoTambahanEnabled,
+    pilihFotoCetakEnabled: booking.pilihFotoCetakEnabled,
     createdAt: booking.createdAt,
   };
 }
@@ -37,9 +52,11 @@ export async function shapeBookingListItem(booking: Booking) {
 export async function shapeBookingListItems(bookings: Booking[]) {
   if (bookings.length === 0) return [];
   const clientIds = [...new Set(bookings.map((b) => b.clientId))];
-  const packageIds = [...new Set(bookings.map((b) => b.packageId))];
+  const packageIds = [...new Set(bookings.map((b) => b.packageId).filter((id): id is number => id !== null))];
   const clients = await db.select().from(clientsTable).where(inArray(clientsTable.id, clientIds));
-  const packages = await db.select().from(packagesTable).where(inArray(packagesTable.id, packageIds));
+  const packages = packageIds.length
+    ? await db.select().from(packagesTable).where(inArray(packagesTable.id, packageIds))
+    : [];
   const clientMap = new Map(clients.map((c) => [c.id, c]));
   const packageMap = new Map(packages.map((p) => [p.id, p]));
   return bookings.map((booking) => ({
@@ -48,7 +65,7 @@ export async function shapeBookingListItems(bookings: Booking[]) {
     clientName: clientMap.get(booking.clientId)?.name ?? "",
     categoryId: booking.categoryId,
     packageId: booking.packageId,
-    packageName: packageMap.get(booking.packageId)?.name ?? "",
+    packageName: booking.packageId ? (packageMap.get(booking.packageId)?.name ?? "") : "",
     eventDate: booking.eventDate,
     locationName: booking.locationName,
     locationAddress: booking.locationAddress,
@@ -57,13 +74,28 @@ export async function shapeBookingListItems(bookings: Booking[]) {
     totalAmount: Number(booking.totalAmount),
     clientOrigin: booking.clientOrigin,
     specialRequest: booking.specialRequest,
+    googleDriveLink: booking.googleDriveLink,
+    detectSubfolder: booking.detectSubfolder,
+    whatsappClient: booking.whatsappClient,
+    whatsappAdmin: booking.whatsappAdmin,
+    maxPhotos: booking.maxPhotos,
+    pilihFotoEnabled: booking.pilihFotoEnabled,
+    downloadFotoEnabled: booking.downloadFotoEnabled,
+    pilihFotoDuration: booking.pilihFotoDuration,
+    downloadFotoDuration: booking.downloadFotoDuration,
+    pilihFotoPassword: booking.pilihFotoPassword,
+    downloadFotoPassword: booking.downloadFotoPassword,
+    pilihFotoTambahanEnabled: booking.pilihFotoTambahanEnabled,
+    pilihFotoCetakEnabled: booking.pilihFotoCetakEnabled,
     createdAt: booking.createdAt,
   }));
 }
 
 export async function shapeBookingDetail(booking: Booking) {
   const [client] = await db.select().from(clientsTable).where(eq(clientsTable.id, booking.clientId));
-  const [pkg] = await db.select().from(packagesTable).where(eq(packagesTable.id, booking.packageId));
+  const [pkg] = booking.packageId
+    ? await db.select().from(packagesTable).where(eq(packagesTable.id, booking.packageId))
+    : [null];
   const teamMembers = booking.teamMemberIds.length
     ? await db.select().from(teamMembersTable).where(inArray(teamMembersTable.id, booking.teamMemberIds))
     : [];

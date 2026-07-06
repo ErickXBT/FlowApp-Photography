@@ -3,7 +3,7 @@ import { useRoute } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Camera, Instagram, Globe2, MessageCircle, ArrowRight } from "lucide-react";
+import { Camera, Instagram, Globe2, MessageCircle, ArrowRight, Youtube, Music } from "lucide-react";
 
 interface LandingData {
   id: number;
@@ -15,6 +15,8 @@ interface LandingData {
   whatsapp?: string;
   instagram?: string;
   website?: string;
+  tiktok?: string;
+  youtube?: string;
   ctaText?: string;
   catalog: Array<{ id: number; title?: string; type: string; url: string; thumbnailUrl?: string }>;
 }
@@ -40,7 +42,7 @@ export default function LandingPage() {
       setLoading(false);
     };
     load();
-  }, [match, params]);
+  }, [match, params?.slug]);
 
   if (loading) {
     return (
@@ -95,7 +97,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h1 className="text-4xl font-serif font-bold tracking-tight">{landing.studioName}</h1>
-                  <p className="mt-2 max-w-xl text-sm text-gray-400">{landing.bio ?? "Studio profesional yang siap membantu kebutuhan foto, MUA, dan event Anda."}</p>
+                  <p className="mt-2 max-w-xl text-sm text-gray-400 whitespace-pre-wrap">{landing.bio ?? "Studio profesional yang siap membantu kebutuhan foto, MUA, dan event Anda."}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -112,6 +114,16 @@ export default function LandingPage() {
                 {landing.website ? (
                   <a href={landing.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#374151] bg-[#111827] px-4 py-2 text-sm text-white transition hover:border-[#A3E635] hover:text-[#A3E635]">
                     <Globe2 className="h-4 w-4" /> Website
+                  </a>
+                ) : null}
+                {landing.tiktok ? (
+                  <a href={landing.tiktok.startsWith("http") ? landing.tiktok : `https://tiktok.com/${landing.tiktok.startsWith("@") ? landing.tiktok : `@${landing.tiktok}`}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#374151] bg-[#111827] px-4 py-2 text-sm text-white transition hover:border-[#A3E635] hover:text-[#A3E635]">
+                    <Music className="h-4 w-4" /> TikTok
+                  </a>
+                ) : null}
+                {landing.youtube ? (
+                  <a href={landing.youtube.startsWith("http") ? landing.youtube : `https://youtube.com/${landing.youtube}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#374151] bg-[#111827] px-4 py-2 text-sm text-white transition hover:border-[#A3E635] hover:text-[#A3E635]">
+                    <Youtube className="h-4 w-4" /> YouTube
                   </a>
                 ) : null}
               </div>

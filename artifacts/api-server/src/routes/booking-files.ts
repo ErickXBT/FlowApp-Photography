@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
-import { db, deliveryFilesTable } from "@workspace/db";
+import { eq, and } from "drizzle-orm";
+import { db, deliveryFilesTable, bookingsTable } from "@workspace/db";
 import {
   ListBookingFilesParams,
   ListBookingFilesResponse,
@@ -73,15 +73,84 @@ router.patch("/files/:id/select", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+
+  // 1. Get target file
+  const [targetFile] = await db
+    .select()
+    .from(deliveryFilesTable)
+    .where(eq(deliveryFilesTable.id, params.data.id))
+    .limit(1);
+
+  if (!targetFile) {
+    res.status(404).json({ error: "File not found" });
+    return;
+  }
+
+  const bookingId = targetFile.bookingId;
+
+  // 2. Get booking details to find maxPhotos
+  const [booking] = await db
+    .select()
+    .from(bookingsTable)
+    .where(eq(bookingsTable.id, bookingId))
+    .limit(1);
+
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  const maxPhotos = booking.maxPhotos ?? 5;
+
+  // 3. Count currently selected raw files
+  const selectedRawFiles = await db
+    .select()
+    .from(deliveryFilesTable)
+    .where(
+      and(
+        eq(deliveryFilesTable.bookingId, bookingId),
+        eq(deliveryFilesTable.folderType, "raw"),
+        eq(deliveryFilesTable.selected, true)
+      )
+    );
+
+  const currentlySelectedCount = selectedRawFiles.length;
+
+  // If selecting a new file, check if we're already at the quota
+  if (parsed.data.selected && !targetFile.selected && currentlySelectedCount >= maxPhotos) {
+    res.status(400).json({ error: `Kuota seleksi foto sudah penuh (maksimal ${maxPhotos} foto).` });
+    return;
+  }
+
+  // 4. Update the selection
   const [file] = await db
     .update(deliveryFilesTable)
     .set({ selected: parsed.data.selected })
     .where(eq(deliveryFilesTable.id, params.data.id))
     .returning();
-  if (!file) {
-    res.status(404).json({ error: "File not found" });
-    return;
+
+  // 5. Recalculate selection count to see if we reached the quota
+  const updatedSelectedRawFiles = await db
+    .select()
+    .from(deliveryFilesTable)
+    .where(
+      and(
+        eq(deliveryFilesTable.bookingId, bookingId),
+        eq(deliveryFilesTable.folderType, "raw"),
+        eq(deliveryFilesTable.selected, true)
+      )
+    );
+
+  const newSelectedCount = updatedSelectedRawFiles.length;
+
+  // If the quota is filled, automatically transition booking status to "editing"
+  if (newSelectedCount === maxPhotos && booking.status !== "editing" && booking.status !== "delivered" && booking.status !== "closed") {
+    await db
+      .update(bookingsTable)
+      .set({ status: "editing" })
+      .where(eq(bookingsTable.id, bookingId));
   }
+
   res.json(ToggleFileSelectionResponse.parse(file));
 });
 

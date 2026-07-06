@@ -114,6 +114,14 @@ export default function BookingDetail() {
           <p className="text-muted-foreground">{booking.package.name} • {new Date(booking.eventDate).toLocaleDateString(undefined, { dateStyle: "long" })}</p>
         </div>
         <div className="flex items-center gap-3">
+          <a
+            href={clientPortalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-4 py-2 bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] text-sm font-bold rounded-lg transition-colors"
+          >
+            Buka Client Portal
+          </a>
           <Select
             value={booking.status}
             onValueChange={(status) => updateStatus.mutate({ id, data: { status: status as any } })}

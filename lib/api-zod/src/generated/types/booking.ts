@@ -14,8 +14,10 @@ export interface Booking {
   clientName: string;
   /** @nullable */
   categoryId: number | null;
-  packageId: number;
-  packageName: string;
+  /** @nullable */
+  packageId?: number | null;
+  /** @nullable */
+  packageName?: string | null;
   eventDate: Date;
   /** @nullable */
   locationName?: string | null;
@@ -28,5 +30,23 @@ export interface Booking {
   clientOrigin: ClientOrigin;
   /** @nullable */
   specialRequest?: string | null;
+  /** @nullable */
+  googleDriveLink?: string | null;
+  detectSubfolder?: boolean;
+  /** @nullable */
+  whatsappClient?: string | null;
+  /** @nullable */
+  whatsappAdmin?: string | null;
+  maxPhotos?: number;
+  pilihFotoEnabled?: boolean;
+  downloadFotoEnabled?: boolean;
+  pilihFotoDuration?: string;
+  downloadFotoDuration?: string;
+  /** @nullable */
+  pilihFotoPassword?: string | null;
+  /** @nullable */
+  downloadFotoPassword?: string | null;
+  pilihFotoTambahanEnabled?: boolean;
+  pilihFotoCetakEnabled?: boolean;
   createdAt: Date;
 }

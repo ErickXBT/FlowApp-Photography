@@ -43,8 +43,10 @@ export interface Booking {
   clientName: string;
   /** @nullable */
   categoryId: number | null;
-  packageId: number;
-  packageName: string;
+  /** @nullable */
+  packageId?: number | null;
+  /** @nullable */
+  packageName?: string | null;
   eventDate: string;
   /** @nullable */
   locationName?: string | null;
@@ -57,6 +59,24 @@ export interface Booking {
   clientOrigin: ClientOrigin;
   /** @nullable */
   specialRequest?: string | null;
+  /** @nullable */
+  googleDriveLink?: string | null;
+  detectSubfolder?: boolean;
+  /** @nullable */
+  whatsappClient?: string | null;
+  /** @nullable */
+  whatsappAdmin?: string | null;
+  maxPhotos?: number;
+  pilihFotoEnabled?: boolean;
+  downloadFotoEnabled?: boolean;
+  pilihFotoDuration?: string;
+  downloadFotoDuration?: string;
+  /** @nullable */
+  pilihFotoPassword?: string | null;
+  /** @nullable */
+  downloadFotoPassword?: string | null;
+  pilihFotoTambahanEnabled?: boolean;
+  pilihFotoCetakEnabled?: boolean;
   createdAt: string;
 }
 
@@ -244,7 +264,7 @@ export type ClientDetail = Client & {
 export interface BookingInput {
   clientId: number;
   categoryId?: number;
-  packageId: number;
+  packageId?: number;
   eventDate: string;
   locationName?: string;
   locationAddress?: string;
@@ -254,6 +274,19 @@ export interface BookingInput {
   moodboardLinks?: string[];
   teamMemberIds?: number[];
   addOnIds?: number[];
+  googleDriveLink?: string;
+  detectSubfolder?: boolean;
+  whatsappClient?: string;
+  whatsappAdmin?: string;
+  maxPhotos?: number;
+  pilihFotoEnabled?: boolean;
+  downloadFotoEnabled?: boolean;
+  pilihFotoDuration?: string;
+  downloadFotoDuration?: string;
+  pilihFotoPassword?: string;
+  downloadFotoPassword?: string;
+  pilihFotoTambahanEnabled?: boolean;
+  pilihFotoCetakEnabled?: boolean;
 }
 
 export interface BookingUpdate {
@@ -268,6 +301,19 @@ export interface BookingUpdate {
   moodboardLinks?: string[];
   teamMemberIds?: number[];
   addOnIds?: number[];
+  googleDriveLink?: string;
+  detectSubfolder?: boolean;
+  whatsappClient?: string;
+  whatsappAdmin?: string;
+  maxPhotos?: number;
+  pilihFotoEnabled?: boolean;
+  downloadFotoEnabled?: boolean;
+  pilihFotoDuration?: string;
+  downloadFotoDuration?: string;
+  pilihFotoPassword?: string;
+  downloadFotoPassword?: string;
+  pilihFotoTambahanEnabled?: boolean;
+  pilihFotoCetakEnabled?: boolean;
 }
 
 export interface BookingStatusUpdate {

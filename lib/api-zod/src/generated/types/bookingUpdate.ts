@@ -19,4 +19,17 @@ export interface BookingUpdate {
   moodboardLinks?: string[];
   teamMemberIds?: number[];
   addOnIds?: number[];
+  googleDriveLink?: string;
+  detectSubfolder?: boolean;
+  whatsappClient?: string;
+  whatsappAdmin?: string;
+  maxPhotos?: number;
+  pilihFotoEnabled?: boolean;
+  downloadFotoEnabled?: boolean;
+  pilihFotoDuration?: string;
+  downloadFotoDuration?: string;
+  pilihFotoPassword?: string;
+  downloadFotoPassword?: string;
+  pilihFotoTambahanEnabled?: boolean;
+  pilihFotoCetakEnabled?: boolean;
 }

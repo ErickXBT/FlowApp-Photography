@@ -15,7 +15,7 @@ router.get("/calendar", async (_req, res): Promise<void> => {
   const shaped = bookings.map((b) => ({
     id: b.id,
     clientName: clientMap.get(b.clientId)?.name ?? "",
-    packageName: packageMap.get(b.packageId)?.name ?? "",
+    packageName: b.packageId ? (packageMap.get(b.packageId)?.name ?? "") : "",
     eventDate: b.eventDate,
     status: b.status,
   }));

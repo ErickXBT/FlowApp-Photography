@@ -147,6 +147,15 @@ export default function ClientDetail() {
                 <div className="flex items-center gap-4">
                   <span className="font-medium">{fmtIDR(b.totalAmount)}</span>
                   <Badge variant="secondary" className="capitalize">{b.status.replace("_", " ")}</Badge>
+                  <a
+                    href={`/client/bookings/${b.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center justify-center px-3 py-1.5 bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] text-xs font-bold rounded transition-colors"
+                  >
+                    Buka Portal
+                  </a>
                 </div>
               </Link>
             ))}

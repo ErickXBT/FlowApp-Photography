@@ -6,11 +6,12 @@ import {
   useListBookingFiles,
   useToggleFileSelection,
   getListBookingFilesQueryKey,
+  getGetBookingQueryKey,
 } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { fmtIDR } from "@/lib/utils";
-import { Calendar, File, RefreshCw, Download, CheckSquare, Printer, User, MapPin, Users } from "lucide-react";
+import { Calendar, File, RefreshCw, Download, CheckSquare, Printer, User, MapPin, Users, ArrowLeft, Check } from "lucide-react";
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   pending:          { label: "Pending",          cls: "bg-gray-500/30 text-gray-300 border-gray-500/40" },
@@ -43,7 +44,10 @@ export default function ClientPortal() {
 
   const toggleSelection = useToggleFileSelection({
     mutation: {
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: getListBookingFilesQueryKey(id) }),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListBookingFilesQueryKey(id) });
+        queryClient.invalidateQueries({ queryKey: getGetBookingQueryKey(id) });
+      },
     },
   });
 
@@ -117,28 +121,11 @@ export default function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">
-      {/* Simulate View Bar */}
+      {/* Top Header Navigation */}
       <div className="flex items-center gap-2 px-6 py-2 bg-[#111827] border-b border-[#1e293b]">
-        <span className="text-xs text-[#64748b] mr-1">Simulate View:</span>
-        {[
-          { name: "Landing Page", href: "#" },
-          { name: "14-Step Booking", href: "/book" },
-          { name: "Client Portal", active: true },
-          { name: "Vendor Dashboard", href: "/dashboard" },
-          { name: "Super Admin", href: "/admin" },
-        ].map(v => (
-          <Link key={v.name} href={(v as any).href ?? "#"}
-            className={`text-xs px-3 py-1 rounded-full transition-colors ${v.active ? "bg-[#A3E635] text-[#0f172a] font-semibold" : "text-[#94a3b8] border border-[#1e293b] hover:border-[#374151] hover:text-white"}`}>
-            {v.name}
-          </Link>
-        ))}
-        {/* Booking selector */}
-        <div className="ml-auto flex items-center gap-2 text-xs text-[#94a3b8]">
-          <span>Pilih Booking:</span>
-          <select className="bg-[#1e293b] border border-[#374151] text-white text-xs rounded px-2 py-1">
-            <option>{booking.eventDate ? new Date(booking.eventDate).toISOString().split("T")[0] : "TBD"} (BK-{booking.id})</option>
-          </select>
-        </div>
+        <Link href="/dashboard" className="text-xs px-3 py-1.5 bg-[#1e293b] hover:bg-[#2d3748] border border-[#2d3748] text-white rounded-md transition-colors flex items-center gap-1.5 font-semibold">
+          <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Dashboard
+        </Link>
       </div>
 
       <div className="flex">
@@ -243,7 +230,7 @@ export default function ClientPortal() {
                   <span className="text-white font-semibold text-sm">Estimasi Pengerjaan & Status Editing</span>
                 </div>
                 <div className="text-xs text-[#94a3b8]">Turnaround ETA <span className="text-white font-bold">7 Hari Kerja</span></div>
-                <div className="text-xs text-[#94a3b8]">Pilihan Foto Seleksi <span className="text-white font-bold">{selectedCount} / 50 Foto</span></div>
+                <div className="text-xs text-[#94a3b8]">Pilihan Foto Seleksi <span className="text-white font-bold">{selectedCount} / {booking.maxPhotos ?? 5} Foto</span></div>
                 <div className="text-xs">
                   <span className="text-[#94a3b8]">Status Terakhir </span>
                   <span className="text-white font-medium">{booking.status}</span>
@@ -261,7 +248,7 @@ export default function ClientPortal() {
                   <div className="text-[#A3E635] font-mono text-sm">{invoice.invoiceNumber}</div>
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between text-[#94a3b8]">
-                      <span>Harga Paket</span><span>{fmtIDR(Number(booking.package.price))}</span>
+                      <span>Harga Paket</span><span>{booking.package ? fmtIDR(Number(booking.package.price)) : "—"}</span>
                     </div>
                     {(() => {
                       const addTotal = (booking.addOns ?? []).reduce((s, a) => s + a.price, 0);
@@ -329,7 +316,7 @@ export default function ClientPortal() {
                   </button>
                 ))}
                 <div className="ml-auto flex items-center px-4">
-                  <span className="text-xs text-[#64748b]">Pilihan Foto: <span className="text-white">{selectedCount} / 50</span></span>
+                  <span className="text-xs text-[#64748b]">Pilihan Foto: <span className="text-white">{selectedCount} / {booking.maxPhotos ?? 5}</span></span>
                   {selectedCount > 0 && (
                     <button className="ml-3 bg-[#A3E635]/20 text-[#A3E635] border border-[#A3E635]/30 text-xs px-3 py-1 rounded-lg hover:bg-[#A3E635]/30 transition-colors flex items-center gap-1">
                       <Download className="h-3 w-3" /> Unduh ZIP Terpilih
@@ -338,47 +325,93 @@ export default function ClientPortal() {
                 </div>
               </div>
 
-              {/* Instruction */}
               <div className="bg-[#0f172a]/40 px-4 py-2 text-[10px] text-[#64748b] border-b border-[#2d3748]">
                 <span className="text-[#A3E635]">⚠ Instruksi Seleksi Foto:</span>{" "}
-                Centang maksimal 50 foto di bawah ini yang paling Anda sukai untuk diedit (retouching) oleh tim kami. Jika kuota sudah habis, Anda tidak bisa memilih lagi kecuali Anda melepas pilihan foto lainnya.
+                Centang maksimal {booking.maxPhotos ?? 5} foto di bawah ini yang paling Anda sukai untuk diedit (retouching) oleh tim kami. Jika kuota sudah habis, Anda tidak bisa memilih lagi kecuali Anda melepas pilihan foto lainnya.
               </div>
 
               <div className="p-4">
                 {(() => {
-                  const activeFiles = fileTab === "raw" ? rawFiles : fileTab === "edited" ? editedFiles : videoFiles;
-                  if (activeFiles.length === 0) {
+                    const activeFiles = fileTab === "raw" ? rawFiles : fileTab === "edited" ? editedFiles : videoFiles;
+                    if (activeFiles.length === 0) {
+                      return (
+                        <div className="text-center py-12 text-[#475569]">
+                          <File className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                          <p className="text-sm">Belum ada file yang diunggah oleh vendor untuk pemotretan ini.</p>
+                        </div>
+                      );
+                    }
+                    if (fileTab === "raw" || fileTab === "edited") {
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                          {activeFiles.map(file => {
+                            const isSelected = file.selected;
+                            const isDisabled = !isSelected && selectedCount >= (booking.maxPhotos ?? 5);
+                            return (
+                              <div
+                                key={file.id}
+                                onClick={() => {
+                                  if (!isDisabled) {
+                                    toggleSelection.mutate({ id: file.id, data: { selected: !isSelected } });
+                                  }
+                                }}
+                                className={`relative group aspect-square rounded-xl overflow-hidden border cursor-pointer transition-all ${
+                                  isSelected
+                                    ? "border-[#A3E635] ring-2 ring-[#A3E635]/20 scale-[0.98]"
+                                    : isDisabled
+                                    ? "border-[#374151] opacity-40 cursor-not-allowed"
+                                    : "border-[#374151] hover:border-[#A3E635]/50"
+                                }`}
+                              >
+                                <img
+                                  src={file.fileUrl}
+                                  alt={file.fileName}
+                                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute top-2.5 right-2.5 z-10">
+                                  <div
+                                    className={`h-5.5 w-5.5 rounded-full flex items-center justify-center border transition-all ${
+                                      isSelected
+                                        ? "bg-[#A3E635] border-[#A3E635] text-[#0f172a]"
+                                        : "bg-black/50 border-[#475569] text-transparent hover:border-white"
+                                    }`}
+                                  >
+                                    <Check className="h-3 w-3 font-bold text-[#0f172a]" />
+                                  </div>
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2 text-[10px] text-gray-300 truncate">
+                                  {file.fileName}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    }
                     return (
-                      <div className="text-center py-12 text-[#475569]">
-                        <File className="h-10 w-10 mx-auto mb-3 opacity-30" />
-                        <p className="text-sm">Belum ada file raw yang diunggah oleh vendor untuk pemotretan ini.</p>
-                        <p className="text-xs mt-1">[Contoh: Coba login/switch ke <span className="text-[#A3E635]">Vendor Dashboard</span> untuk mengunggah file]</p>
-                      </div>
-                    );
-                  }
-                  return (
-                    <div className="space-y-2">
-                      {activeFiles.map(file => (
-                        <div key={file.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#374151] bg-[#0f172a]/50 p-3">
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="checkbox"
-                              checked={file.selected}
-                              onChange={e => toggleSelection.mutate({ id: file.id, data: { selected: e.target.checked } })}
-                              className="accent-[#A3E635] h-4 w-4"
-                            />
-                            <a href={file.fileUrl} target="_blank" rel="noreferrer" className="text-sm text-white hover:text-[#A3E635] hover:underline">
-                              {file.fileName}
+                      <div className="space-y-2">
+                        {activeFiles.map(file => (
+                          <div key={file.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#374151] bg-[#0f172a]/50 p-3">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="checkbox"
+                                checked={file.selected}
+                                onChange={e => toggleSelection.mutate({ id: file.id, data: { selected: e.target.checked } })}
+                                className="accent-[#A3E635] h-4 w-4"
+                              />
+                              <a href={file.fileUrl} target="_blank" rel="noreferrer" className="text-sm text-white hover:text-[#A3E635] hover:underline">
+                                {file.fileName}
+                              </a>
+                            </div>
+                            <a href={file.fileUrl} target="_blank" rel="noreferrer"
+                              className="text-xs border border-[#374151] text-[#94a3b8] hover:text-white hover:border-[#A3E635] px-3 py-1 rounded-lg transition-colors flex items-center gap-1">
+                              <Download className="h-3 w-3" /> Download
                             </a>
                           </div>
-                          <a href={file.fileUrl} target="_blank" rel="noreferrer"
-                            className="text-xs border border-[#374151] text-[#94a3b8] hover:text-white hover:border-[#A3E635] px-3 py-1 rounded-lg transition-colors flex items-center gap-1">
-                            <Download className="h-3 w-3" /> Download
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  );
+                        ))}
+                      </div>
+                    );
                 })()}
               </div>
             </div>
