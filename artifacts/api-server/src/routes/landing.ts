@@ -55,7 +55,21 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     dashboardDurationDisplay,
     seoMetaTitle,
     seoMetaDesc,
-    seoKeywords
+    seoKeywords,
+    descPilihFoto,
+    descDownloadFoto,
+    descFotoTambahan,
+    descFotoCetak,
+    tplLinkClient,
+    tplLinkTambahan,
+    tplHasilAwal,
+    tplHasilTambahan,
+    defaultPrintSizes,
+    defaultPrintPricing,
+    supportWhatsApp,
+    supportEmail,
+    telegramBotToken,
+    telegramChatId
   } = req.body as {
     bio?: string; profilePhotoUrl?: string; bannerUrl?: string;
     whatsapp?: string; instagram?: string; website?: string; tiktok?: string; youtube?: string; ctaText?: string; studioName?: string;
@@ -78,6 +92,20 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     seoMetaTitle?: string;
     seoMetaDesc?: string;
     seoKeywords?: string;
+    descPilihFoto?: string;
+    descDownloadFoto?: string;
+    descFotoTambahan?: string;
+    descFotoCetak?: string;
+    tplLinkClient?: string;
+    tplLinkTambahan?: string;
+    tplHasilAwal?: string;
+    tplHasilTambahan?: string;
+    defaultPrintSizes?: string;
+    defaultPrintPricing?: string;
+    supportWhatsApp?: string;
+    supportEmail?: string;
+    telegramBotToken?: string;
+    telegramChatId?: string;
   };
   const [updated] = await db.update(tenants).set({
     ...(bio !== undefined && { bio }),
@@ -109,6 +137,20 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     ...(seoMetaTitle !== undefined && { seoMetaTitle }),
     ...(seoMetaDesc !== undefined && { seoMetaDesc }),
     ...(seoKeywords !== undefined && { seoKeywords }),
+    ...(descPilihFoto !== undefined && { descPilihFoto }),
+    ...(descDownloadFoto !== undefined && { descDownloadFoto }),
+    ...(descFotoTambahan !== undefined && { descFotoTambahan }),
+    ...(descFotoCetak !== undefined && { descFotoCetak }),
+    ...(tplLinkClient !== undefined && { tplLinkClient }),
+    ...(tplLinkTambahan !== undefined && { tplLinkTambahan }),
+    ...(tplHasilAwal !== undefined && { tplHasilAwal }),
+    ...(tplHasilTambahan !== undefined && { tplHasilTambahan }),
+    ...(defaultPrintSizes !== undefined && { defaultPrintSizes }),
+    ...(defaultPrintPricing !== undefined && { defaultPrintPricing }),
+    ...(supportWhatsApp !== undefined && { supportWhatsApp }),
+    ...(supportEmail !== undefined && { supportEmail }),
+    ...(telegramBotToken !== undefined && { telegramBotToken }),
+    ...(telegramChatId !== undefined && { telegramChatId }),
   }).where(eq(tenants.id, tenantId)).returning();
   res.json(updated);
 });

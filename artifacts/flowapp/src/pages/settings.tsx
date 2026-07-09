@@ -47,6 +47,30 @@ interface TenantProfile {
   seoMetaTitle?: string;
   seoMetaDesc?: string;
   seoKeywords?: string;
+
+  // Deskripsi Menu
+  descPilihFoto?: string;
+  descDownloadFoto?: string;
+  descFotoTambahan?: string;
+  descFotoCetak?: string;
+
+  // Template Pesan
+  tplLinkClient?: string;
+  tplLinkTambahan?: string;
+  tplHasilAwal?: string;
+  tplHasilTambahan?: string;
+
+  // Cetak Settings
+  defaultPrintSizes?: string;
+  defaultPrintPricing?: string;
+
+  // Client Desk
+  supportWhatsApp?: string;
+  supportEmail?: string;
+
+  // Telegram Bot Settings
+  telegramBotToken?: string;
+  telegramChatId?: string;
 }
 
 interface LandingItem {
@@ -97,7 +121,7 @@ export default function Settings() {
   // New settings tab controllers
   const [mainTab, setMainTab] = useState<"public" | "project">("public");
   const [activeSubTab, setActiveSubTab] = useState<"umum" | "seo" | "deskripsi" | "template" | "cetak" | "desk" | "telegram">("umum");
-  const [lastFocusedField, setLastFocusedField] = useState<"title" | "desc" | "keywords">("title");
+  const [lastFocusedField, setLastFocusedField] = useState<"title" | "desc" | "keywords" | "tplLinkClient" | "tplLinkTambahan" | "tplHasilAwal" | "tplHasilTambahan">("title");
 
   const loadProfile = async () => {
     try {
@@ -186,11 +210,36 @@ export default function Settings() {
         return { ...p, seoMetaTitle: (p.seoMetaTitle ?? "") + token };
       } else if (lastFocusedField === "desc") {
         return { ...p, seoMetaDesc: (p.seoMetaDesc ?? "") + token };
-      } else {
+      } else if (lastFocusedField === "keywords") {
         return { ...p, seoKeywords: (p.seoKeywords ?? "") + (p.seoKeywords ? ", " : "") + token };
+      } else if (lastFocusedField === "tplLinkClient") {
+        return { ...p, tplLinkClient: (p.tplLinkClient ?? "") + token };
+      } else if (lastFocusedField === "tplLinkTambahan") {
+        return { ...p, tplLinkTambahan: (p.tplLinkTambahan ?? "") + token };
+      } else if (lastFocusedField === "tplHasilAwal") {
+        return { ...p, tplHasilAwal: (p.tplHasilAwal ?? "") + token };
+      } else if (lastFocusedField === "tplHasilTambahan") {
+        return { ...p, tplHasilTambahan: (p.tplHasilTambahan ?? "") + token };
       }
+      return p;
     });
   };
+
+  const renderTemplatePreview = (templateText: string | undefined, defaultText: string) => {
+    const text = templateText || defaultText;
+    return text
+      .replace(/\{\{client_name\}\}/g, "Dian Sastrowardoyo")
+      .replace(/\{\{link\}\}/g, `${window.location.origin}/client/bookings/8`)
+      .replace(/\{\{count\}\}/g, String(profile?.defaultMaxPhotos || 10))
+      .replace(/\{\{password\}\}/g, profile?.defaultPilihFotoPassword || "pilih123")
+      .replace(/\{\{duration\}\}/g, profile?.defaultPilihFotoDuration || "30 hari")
+      .replace(/\{\{download_duration\}\}/g, profile?.defaultDownloadDuration || "∞ Selamanya")
+      .replace(/\{\{print_sizes\}\}/g, profile?.defaultPrintSizes || "4R, 10R")
+      .replace(/\{\{print_duration\}\}/g, "7 hari")
+      .replace(/\{\{list\}\}/g, "- DSC_1092.JPG\n- DSC_1098.JPG\n- DSC_1105.JPG");
+  };
+
+
 
   if (loading || !user || profileLoading) return <div className="min-h-screen bg-[#0f172a] p-6"><Skeleton className="h-8 w-64 mb-4 bg-[#1e293b]" /><Skeleton className="h-72 bg-[#1e293b]" /></div>;
 
@@ -690,7 +739,7 @@ export default function Settings() {
                         onChange={v => setProfile(p => p ? { ...p, defaultCetakFotoEnabled: v } : null)}
                         label="Cetak Foto"
                         subtitle="Aktifkan fitur cetak di Pengaturan Cetak terlebih dahulu."
-                        disabled
+                        disabled={!profile.defaultPrintSizes}
                       />
                     </div>
                   </div>
@@ -834,16 +883,446 @@ export default function Settings() {
             </Card>
           )}
 
-          {activeSubTab !== "umum" && activeSubTab !== "seo" && (
-            <Card className="bg-[#1e293b] border-[#2d3748] text-slate-400 max-w-4xl">
-              <CardContent className="flex flex-col items-center justify-center py-20 text-center space-y-3">
-                <Lock className="h-10 w-10 text-[#64748b] mb-2" />
-                <h3 className="text-white font-bold text-sm">Fitur Terkunci (Segera Hadir)</h3>
-                <p className="text-xs max-w-xs">
-                  Modul pengaturan ini sedang dalam tahap pengembangan dan akan segera diaktifkan pada pembaruan sistem berikutnya.
-                </p>
-              </CardContent>
-            </Card>
+          {activeSubTab === "deskripsi" && (
+            <div className="space-y-6 max-w-4xl">
+              <div className="space-y-1">
+                <h3 className="text-white font-bold text-base">Deskripsi Menu</h3>
+                <p className="text-xs text-[#64748b]">Ubah teks deskripsi di bawah tiap menu pada link klien. Kosongkan untuk memakai teks bawaan.</p>
+              </div>
+
+              {/* Pilih Foto Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <span>📷</span>
+                    <span>Pilih Foto</span>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.descPilihFoto ?? ""}
+                    onChange={e => setProfile(p => p ? { ...p, descPilihFoto: e.target.value } : null)}
+                    placeholder="Kosongkan untuk teks bawaan"
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={3}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Download Foto Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <span>📥</span>
+                    <span>Download Foto</span>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.descDownloadFoto ?? ""}
+                    onChange={e => setProfile(p => p ? { ...p, descDownloadFoto: e.target.value } : null)}
+                    placeholder="Kosongkan untuk teks bawaan"
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={3}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Pilih Foto Tambahan Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <span>💵</span>
+                    <span>Pilih Foto Tambahan</span>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.descFotoTambahan ?? ""}
+                    onChange={e => setProfile(p => p ? { ...p, descFotoTambahan: e.target.value } : null)}
+                    placeholder="Kosongkan untuk teks bawaan"
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={3}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Pilih Foto Cetak Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <span>🖨</span>
+                    <span>Pilih Foto Cetak</span>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.descFotoCetak ?? ""}
+                    onChange={e => setProfile(p => p ? { ...p, descFotoCetak: e.target.value } : null)}
+                    placeholder="Kosongkan untuk teks bawaan"
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={3}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                  {saving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+                </Button>
+                {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+              </div>
+            </div>
+          )}
+
+          {activeSubTab === "template" && (
+            <div className="space-y-6 max-w-4xl">
+              {/* Alert Header Bar */}
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-xs font-semibold flex items-center gap-2">
+                <Check className="h-4 w-4 shrink-0 text-[#A3E635]" />
+                <span>Template pesanmu sekarang mendukung emoji di semua platform, termasuk WhatsApp Desktop, iOS, dan Android. Silakan gunakan emoji sesuka hati! 🚀</span>
+              </div>
+
+              {/* Link Client Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div>
+                    <h4 className="text-white text-xs font-bold flex items-center gap-1.5">
+                      <span>📖</span> Link Client (Admin → Klien)
+                    </h4>
+                    <p className="text-[10px] text-[#64748b]">Template umum untuk mengirim link utama ke klien.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold">Variables</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        "{{client_name}}", "{{link}}", "{{count}}", "{{password}}", "{{duration}}", "{{download_duration}}", "{{print_sizes}}", "{{print_duration}}"
+                      ].map(v => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => handleAddToken(v)}
+                          className="px-2 py-1 bg-[#0f172a] border border-[#374151] hover:border-[#A3E635] text-slate-300 rounded text-[10px] font-mono"
+                        >
+                          {v.replace(/[{}]/g, "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.tplLinkClient ?? ""}
+                    onFocus={() => setLastFocusedField("tplLinkClient")}
+                    onChange={e => setProfile(p => p ? { ...p, tplLinkClient: e.target.value } : null)}
+                    placeholder="Tulis template pesan dalam Bahasa Indonesia..."
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={4}
+                  />
+                  <div className="p-3 bg-[#0f172a] border border-[#374151] rounded-xl text-xs space-y-1 text-slate-300">
+                    <div className="text-[10px] text-[#64748b] font-semibold">Preview:</div>
+                    <pre className="font-sans whitespace-pre-wrap text-[11px] leading-relaxed text-[#94a3b8]">
+                      {renderTemplatePreview(profile.tplLinkClient, "Halo {{client_name}},\n\nBerikut adalah link galeri foto proyek Anda:\n{{link}}\n\nJumlah foto maksimal yang dipilih: {{count}} foto.\nPassword Pilih Foto: {{password}}\nDurasi: {{duration}}\n\nSilakan pilih foto pilihan Anda. Terima kasih!")}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Link Tambahan Foto Card */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div>
+                    <h4 className="text-white text-xs font-bold flex items-center gap-1.5">
+                      <span>📖</span> Link Tambahan Foto (Admin → Klien)
+                    </h4>
+                    <p className="text-[10px] text-[#64748b]">Template untuk mengarahkan klien membuka link utama lalu memilih menu Tambahan Foto.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold">Variables</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        "{{client_name}}", "{{link}}", "{{count}}", "{{password}}", "{{duration}}", "{{download_duration}}"
+                      ].map(v => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => handleAddToken(v)}
+                          className="px-2 py-1 bg-[#0f172a] border border-[#374151] hover:border-[#A3E635] text-slate-300 rounded text-[10px] font-mono"
+                        >
+                          {v.replace(/[{}]/g, "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.tplLinkTambahan ?? ""}
+                    onFocus={() => setLastFocusedField("tplLinkTambahan")}
+                    onChange={e => setProfile(p => p ? { ...p, tplLinkTambahan: e.target.value } : null)}
+                    placeholder="Tulis template pesan dalam Bahasa Indonesia..."
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={4}
+                  />
+                  <div className="p-3 bg-[#0f172a] border border-[#374151] rounded-xl text-xs space-y-1 text-slate-300">
+                    <div className="text-[10px] text-[#64748b] font-semibold">Preview:</div>
+                    <pre className="font-sans whitespace-pre-wrap text-[11px] leading-relaxed text-[#94a3b8]">
+                      {renderTemplatePreview(profile.tplLinkTambahan, "Halo {{client_name}},\n\nJika ingin menambah atau membeli foto tambahan, silakan buka link galeri Anda:\n{{link}}\n\nLalu pilih menu Tambahan Foto.\nPassword: {{password}}\nDurasi Download: {{download_duration}}\n\nTerima kasih!")}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Hasil Awal (Klien → Admin) */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div>
+                    <h4 className="text-white text-xs font-bold flex items-center gap-1.5">
+                      <span>📥</span> Hasil Awal (Klien → Admin)
+                    </h4>
+                    <p className="text-[10px] text-[#64748b]">Pesan saat klien mengirimkan foto yang dipilih.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold">Variables</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        "{{client_name}}", "{{count}}", "{{list}}"
+                      ].map(v => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => handleAddToken(v)}
+                          className="px-2 py-1 bg-[#0f172a] border border-[#374151] hover:border-[#A3E635] text-slate-300 rounded text-[10px] font-mono"
+                        >
+                          {v.replace(/[{}]/g, "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.tplHasilAwal ?? ""}
+                    onFocus={() => setLastFocusedField("tplHasilAwal")}
+                    onChange={e => setProfile(p => p ? { ...p, tplHasilAwal: e.target.value } : null)}
+                    placeholder="Tulis template pesan dalam Bahasa Indonesia..."
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={4}
+                  />
+                  <div className="p-3 bg-[#0f172a] border border-[#374151] rounded-xl text-xs space-y-1 text-slate-300">
+                    <div className="text-[10px] text-[#64748b] font-semibold">Preview:</div>
+                    <pre className="font-sans whitespace-pre-wrap text-[11px] leading-relaxed text-[#94a3b8]">
+                      {renderTemplatePreview(profile.tplHasilAwal, "Halo Admin,\n\nSaya {{client_name}} telah selesai memilih {{count}} foto pilihan saya.\n\nBerikut adalah daftar fotonya:\n{{list}}\n\nMohon segera diproses. Terima kasih!")}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Hasil Tambahan (Klien → Admin) */}
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  <div>
+                    <h4 className="text-white text-xs font-bold flex items-center gap-1.5">
+                      <span>📥</span> Hasil Tambahan (Klien → Admin)
+                    </h4>
+                    <p className="text-[10px] text-[#64748b]">Pesan saat klien mengirimkan pilihan foto tambahan.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-[#94a3b8] uppercase tracking-wider font-bold">Variables</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        "{{client_name}}", "{{count}}", "{{list}}"
+                      ].map(v => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => handleAddToken(v)}
+                          className="px-2 py-1 bg-[#0f172a] border border-[#374151] hover:border-[#A3E635] text-slate-300 rounded text-[10px] font-mono"
+                        >
+                          {v.replace(/[{}]/g, "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 border-b border-[#374151] max-w-md">
+                    <button type="button" className="px-3 py-1 text-xs border-b-2 border-[#A3E635] font-semibold text-white">Indonesian ID</button>
+                    <button type="button" className="px-3 py-1 text-xs text-slate-400 cursor-not-allowed">English us</button>
+                  </div>
+                  <Textarea
+                    value={profile.tplHasilTambahan ?? ""}
+                    onFocus={() => setLastFocusedField("tplHasilTambahan")}
+                    onChange={e => setProfile(p => p ? { ...p, tplHasilTambahan: e.target.value } : null)}
+                    placeholder="Tulis template pesan dalam Bahasa Indonesia..."
+                    className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    rows={4}
+                  />
+                  <div className="p-3 bg-[#0f172a] border border-[#374151] rounded-xl text-xs space-y-1 text-slate-300">
+                    <div className="text-[10px] text-[#64748b] font-semibold">Preview:</div>
+                    <pre className="font-sans whitespace-pre-wrap text-[11px] leading-relaxed text-[#94a3b8]">
+                      {renderTemplatePreview(profile.tplHasilTambahan, "Halo Admin,\n\nSaya {{client_name}} telah memilih {{count}} foto tambahan baru.\n\nBerikut adalah daftar fotonya:\n{{list}}\n\nTerima kasih!")}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                  {saving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+                </Button>
+                {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+              </div>
+            </div>
+          )}
+
+          {activeSubTab === "cetak" && (
+            <div className="space-y-6 max-w-4xl">
+              <div className="space-y-1">
+                <h3 className="text-white font-bold text-base">🖨 Pengaturan Cetak Foto</h3>
+                <p className="text-xs text-[#64748b]">Atur ukuran cetak bawaan dan harga cetak yang ditawarkan untuk pesanan klien.</p>
+              </div>
+
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  {/* Print Sizes */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs">Ukuran Cetak Default</Label>
+                    <Input
+                      value={profile.defaultPrintSizes ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, defaultPrintSizes: e.target.value } : null)}
+                      placeholder="Contoh: 4R, 10R, 20R (pisahkan dengan koma)"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    />
+                    <span className="text-[10px] text-[#64748b] block">Ukuran foto fisik yang dapat dipilih klien untuk dicetak.</span>
+                  </div>
+
+                  {/* Print Pricing */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs">Harga / Pricelist Per Ukuran</Label>
+                    <Textarea
+                      value={profile.defaultPrintPricing ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, defaultPrintPricing: e.target.value } : null)}
+                      placeholder="Contoh:&#10;4R: 15000&#10;10R: 35000&#10;20R: 75000"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                      rows={4}
+                    />
+                    <span className="text-[10px] text-[#64748b] block">Tulis detail harga per ukuran cetak untuk tagihan otomatis.</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                  {saving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+                </Button>
+                {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+              </div>
+            </div>
+          )}
+
+          {activeSubTab === "desk" && (
+            <div className="space-y-6 max-w-4xl">
+              <div className="space-y-1">
+                <h3 className="text-white font-bold text-base">📞 Client Desk Support</h3>
+                <p className="text-xs text-[#64748b]">Informasi kontak bantuan yang akan muncul pada footer halaman client portal untuk membantu klien.</p>
+              </div>
+
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  {/* Support WhatsApp */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs">WhatsApp Bantuan</Label>
+                    <Input
+                      value={profile.supportWhatsApp ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, supportWhatsApp: e.target.value } : null)}
+                      placeholder="Contoh: +628123456789"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    />
+                    <span className="text-[10px] text-[#64748b] block">Klien akan langsung diarahkan ke nomor ini saat mengklik tombol Hubungi Bantuan.</span>
+                  </div>
+
+                  {/* Support Email */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs">Email Bantuan</Label>
+                    <Input
+                      value={profile.supportEmail ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, supportEmail: e.target.value } : null)}
+                      placeholder="Contoh: support@studio.com"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                  {saving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+                </Button>
+                {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+              </div>
+            </div>
+          )}
+
+          {activeSubTab === "telegram" && (
+            <div className="space-y-6 max-w-4xl">
+              <div className="space-y-1">
+                <h3 className="text-white font-bold text-base">🤖 Telegram Bot Notifications</h3>
+                <p className="text-xs text-[#64748b]">Dapatkan notifikasi instan langsung di aplikasi Telegram saat klien menyelesaikan pemilihan foto mereka.</p>
+              </div>
+
+              <Card className="bg-[#1e293b] border-[#2d3748] text-white">
+                <CardContent className="pt-6 space-y-4">
+                  {/* Bot Token */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs font-semibold">Token Bot Telegram</Label>
+                    <Input
+                      value={profile.telegramBotToken ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, telegramBotToken: e.target.value } : null)}
+                      placeholder="Contoh: 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs font-mono"
+                    />
+                    <span className="text-[10px] text-[#64748b] block">Buat bot baru melalui chat dengan @BotFather di Telegram untuk mendapatkan token ini.</span>
+                  </div>
+
+                  {/* Chat ID */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[#94a3b8] text-xs font-semibold">ID Chat Penerima (Telegram Chat ID)</Label>
+                    <Input
+                      value={profile.telegramChatId ?? ""}
+                      onChange={e => setProfile(p => p ? { ...p, telegramChatId: e.target.value } : null)}
+                      placeholder="Contoh: 987654321 atau ID Grup (dimulai tanda minus)"
+                      className="bg-[#0f172a] border-[#374151] text-white text-xs font-mono"
+                    />
+                    <span className="text-[10px] text-[#64748b] block">Kirim pesan '/start' ke bot Anda, lalu gunakan bot seperti @userinfobot untuk mengetahui ID Chat Anda.</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-3 pt-2">
+                <Button onClick={handleSaveProfile} disabled={saving || !profile} className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold text-sm">
+                  {saving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+                </Button>
+                {message && <span className={`text-sm ${message.startsWith("✓") ? "text-[#A3E635]" : "text-red-400"}`}>{message}</span>}
+              </div>
+            </div>
           )}
         </div>
       )}

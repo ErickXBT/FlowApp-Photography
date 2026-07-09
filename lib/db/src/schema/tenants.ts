@@ -47,4 +47,28 @@ export const tenants = pgTable("tenants", {
   seoMetaTitle: text("seo_meta_title"),
   seoMetaDesc: text("seo_meta_desc"),
   seoKeywords: text("seo_keywords"),
+
+  // Deskripsi Menu
+  descPilihFoto: text("desc_pilih_foto"),
+  descDownloadFoto: text("desc_download_foto"),
+  descFotoTambahan: text("desc_foto_tambahan"),
+  descFotoCetak: text("desc_foto_cetak"),
+
+  // Template Pesan
+  tplLinkClient: text("tpl_link_client"),
+  tplLinkTambahan: text("tpl_link_tambahan"),
+  tplHasilAwal: text("tpl_hasil_awal"),
+  tplHasilTambahan: text("tpl_hasil_tambahan"),
+
+  // Cetak Settings
+  defaultPrintSizes: text("default_print_sizes"),
+  defaultPrintPricing: text("default_print_pricing"),
+
+  // Client Desk
+  supportWhatsApp: text("support_whatsapp"),
+  supportEmail: text("support_email"),
+
+  // Telegram Bot Settings
+  telegramBotToken: text("telegram_bot_token"),
+  telegramChatId: text("telegram_chat_id"),
 });
