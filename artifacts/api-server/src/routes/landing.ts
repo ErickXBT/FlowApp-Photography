@@ -69,7 +69,12 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     supportWhatsApp,
     supportEmail,
     telegramBotToken,
-    telegramChatId
+    telegramChatId,
+    tplRequestRaw,
+    tplPengingatOriginal,
+    tplPengingatTambahan,
+    clientDeskActive,
+    clientDeskApiKey
   } = req.body as {
     bio?: string; profilePhotoUrl?: string; bannerUrl?: string;
     whatsapp?: string; instagram?: string; website?: string; tiktok?: string; youtube?: string; ctaText?: string; studioName?: string;
@@ -106,6 +111,11 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     supportEmail?: string;
     telegramBotToken?: string;
     telegramChatId?: string;
+    tplRequestRaw?: string;
+    tplPengingatOriginal?: string;
+    tplPengingatTambahan?: string;
+    clientDeskActive?: boolean;
+    clientDeskApiKey?: string;
   };
   const [updated] = await db.update(tenants).set({
     ...(bio !== undefined && { bio }),
@@ -151,6 +161,11 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     ...(supportEmail !== undefined && { supportEmail }),
     ...(telegramBotToken !== undefined && { telegramBotToken }),
     ...(telegramChatId !== undefined && { telegramChatId }),
+    ...(tplRequestRaw !== undefined && { tplRequestRaw }),
+    ...(tplPengingatOriginal !== undefined && { tplPengingatOriginal }),
+    ...(tplPengingatTambahan !== undefined && { tplPengingatTambahan }),
+    ...(clientDeskActive !== undefined && { clientDeskActive }),
+    ...(clientDeskApiKey !== undefined && { clientDeskApiKey }),
   }).where(eq(tenants.id, tenantId)).returning();
   res.json(updated);
 });

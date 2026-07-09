@@ -59,6 +59,9 @@ export const tenants = pgTable("tenants", {
   tplLinkTambahan: text("tpl_link_tambahan"),
   tplHasilAwal: text("tpl_hasil_awal"),
   tplHasilTambahan: text("tpl_hasil_tambahan"),
+  tplRequestRaw: text("tpl_request_raw"),
+  tplPengingatOriginal: text("tpl_pengingat_original"),
+  tplPengingatTambahan: text("tpl_pengingat_tambahan"),
 
   // Cetak Settings
   defaultPrintSizes: text("default_print_sizes"),
@@ -67,6 +70,8 @@ export const tenants = pgTable("tenants", {
   // Client Desk
   supportWhatsApp: text("support_whatsapp"),
   supportEmail: text("support_email"),
+  clientDeskActive: boolean("client_desk_active").default(false).notNull(),
+  clientDeskApiKey: text("client_desk_api_key"),
 
   // Telegram Bot Settings
   telegramBotToken: text("telegram_bot_token"),
