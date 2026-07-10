@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { fmtIDR } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Calendar, File, RefreshCw, Download, CheckSquare, Printer, User, MapPin, Users, ArrowLeft, Check, Clock, X, ChevronLeft, ChevronRight, FileCheck } from "lucide-react";
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
@@ -29,6 +30,7 @@ export default function ClientPortal() {
   const [match, params] = useRoute<{ id: string }>("/client/bookings/:id");
   const id = Number(params?.id);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: booking, isLoading, error } = useGetBooking(id);
   const { data: files } = useListBookingFiles(id);
@@ -281,136 +283,222 @@ export default function ClientPortal() {
                   <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Tracking Status Booking - {booking.clientName}</p>
                 </div>
 
-                {/* Detail Booking Card */}
-                <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-5 space-y-4">
-                  <div className="flex justify-between items-center border-b border-[#1e293b] pb-3">
-                    <span className="text-xs font-bold text-slate-200">Detail Booking</span>
-                    <Badge className="bg-[#A3E635] text-[#0f172a] text-[9px] font-black uppercase border-none px-2.5 py-0.5">
-                      {STATUS_BADGE[booking.status]?.label || booking.status}
-                    </Badge>
-                  </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                  {/* Left Column: Booking Details, Invoice Banner, Milestones */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Detail Booking Card */}
+                    <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-5 space-y-4">
+                      <div className="flex justify-between items-center border-b border-[#1e293b] pb-3">
+                        <span className="text-xs font-bold text-slate-200">Detail Booking</span>
+                        <Badge className="bg-[#A3E635] text-[#0f172a] text-[9px] font-black uppercase border-none px-2.5 py-0.5">
+                          {STATUS_BADGE[booking.status]?.label || booking.status}
+                        </Badge>
+                      </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 text-xs">
-                    <div className="space-y-3.5">
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Nama</span>
-                        <span className="font-bold text-white">{booking.clientName}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Paket</span>
-                        <span className="font-bold text-white">{booking.packageName || "Custom Package"}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Tipe Acara</span>
-                        <span className="font-bold text-white">{booking.locationName || "Umum"}</span>
-                      </div>
-                    </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 text-xs">
+                        <div className="space-y-3.5">
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Nama</span>
+                            <span className="font-bold text-white">{booking.clientName}</span>
+                          </div>
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Paket</span>
+                            <span className="font-bold text-white">{booking.packageName || "Custom Package"}</span>
+                          </div>
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Tipe Acara</span>
+                            <span className="font-bold text-white">{booking.locationName || "Umum"}</span>
+                          </div>
+                        </div>
 
-                    <div className="space-y-3.5">
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Jadwal</span>
-                        <span className="font-bold text-white">
-                          {new Date(booking.eventDate).toLocaleDateString("id-ID", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric"
-                          })}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Deadline</span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-white">
-                            {new Date(new Date(booking.eventDate).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("id-ID")}
-                          </span>
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${isOverdue ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-green-500/20 text-green-400 border border-green-500/30"}`}>
-                            {isOverdue ? `Terlambat ${diffDays} hari` : `Sisa ${diffDays} hari`}
-                          </span>
+                        <div className="space-y-3.5">
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Jadwal</span>
+                            <span className="font-bold text-white">
+                              {new Date(booking.eventDate).toLocaleDateString("id-ID", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric"
+                              })}
+                            </span>
+                          </div>
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Deadline</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-white">
+                                {new Date(new Date(booking.eventDate).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("id-ID")}
+                              </span>
+                              <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${isOverdue ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-green-500/20 text-green-400 border border-green-500/30"}`}>
+                                {isOverdue ? `Terlambat ${diffDays} hari` : `Sisa ${diffDays} hari`}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
+                            <span className="text-slate-400">Kode</span>
+                            <span className="font-mono font-bold text-white">{invoiceNum}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex justify-between border-b border-[#1e293b]/50 pb-2">
-                        <span className="text-slate-400">Kode</span>
-                        <span className="font-mono font-bold text-white">{invoiceNum}</span>
+                    </div>
+
+                    {/* Blue Card: Invoice final dan form pelunasan */}
+                    {invoice && (
+                      <div className="bg-blue-600/10 border border-blue-500/25 p-4.5 rounded-xl flex items-start gap-3.5">
+                        <div className="p-2 bg-blue-500/15 text-blue-400 rounded-lg mt-0.5 border border-blue-500/25">
+                          <File className="h-4.5 w-4.5" />
+                        </div>
+                        <div className="text-xs flex-1 space-y-1">
+                          <div className="font-bold text-white">Invoice final dan form pelunasan sudah tersedia</div>
+                          <p className="text-slate-400 text-[10px] leading-relaxed">
+                            {balance > 0
+                              ? "Kamu sudah bisa membuka invoice final dan melanjutkan proses pelunasan untuk booking ini."
+                              : "Booking ini sudah lunas. Invoice final tetap bisa dibuka kembali kapan saja dari bagian ini."}
+                          </p>
+                          <Link
+                            href={`/form-pelunasan/${booking.id}`}
+                            className="inline-flex items-center gap-1 text-[10px] text-blue-400 hover:text-white font-bold transition-all pt-1.5 uppercase tracking-wide cursor-pointer"
+                          >
+                            Lihat Invoice Final di bawah ➔
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Green Card: File hasil sudah tersedia */}
+                    {editedFiles.length > 0 && (
+                      <div className="bg-emerald-600/10 border border-emerald-500/25 p-4.5 rounded-xl flex items-start gap-3.5">
+                        <div className="p-2 bg-emerald-500/15 text-emerald-400 rounded-lg mt-0.5 border border-emerald-500/25">
+                          <FileCheck className="h-4.5 w-4.5" />
+                        </div>
+                        <div className="text-xs flex-1 space-y-1">
+                          <div className="font-bold text-white">File hasil sudah tersedia</div>
+                          <p className="text-slate-400 text-[10px] leading-relaxed">
+                            Kamu sudah bisa mengakses file hasil untuk booking ini. Silakan cek bagian File Hasil di bawah untuk membuka aksesnya.
+                          </p>
+                          <button
+                            onClick={() => setSection("files")}
+                            className="inline-flex items-center gap-1 text-[10px] text-emerald-400 hover:text-white font-bold transition-all pt-1.5 uppercase tracking-wide cursor-pointer text-left"
+                          >
+                            Lihat File Hasil di bawah ➔
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Card PROGRESS (Timeline checklist) */}
+                    <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-5 space-y-5">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block border-b border-[#1e293b] pb-2">Riwayat Progress</span>
+                      <div className="space-y-4.5 relative pl-6 before:absolute before:left-[10px] before:top-2.5 before:bottom-2.5 before:w-[2px] before:bg-slate-800">
+                        {[
+                          { label: "Pending", checked: true },
+                          { label: "Booking Dikonfirmasi", checked: booking.status !== "pending" },
+                          { label: "Sesi Foto / Acara", checked: !["pending", "confirmed"].includes(booking.status) },
+                          { label: "Antrian Edit", checked: ["editing", "delivered", "closed"].includes(booking.status) },
+                          { label: "Proses Edit", checked: ["delivered", "closed"].includes(booking.status) || booking.status === "editing" },
+                          { label: "Revisi", checked: ["delivered", "closed"].includes(booking.status) },
+                          { label: "File Siap", checked: ["delivered", "closed"].includes(booking.status) },
+                          { label: "Selesai", checked: booking.status === "closed" }
+                        ].map((step, idx) => (
+                          <div key={idx} className="flex items-center gap-4 relative">
+                            <div
+                              className={`absolute -left-[22px] h-4 w-4 rounded-full flex items-center justify-center border z-10 transition-all ${
+                                step.checked
+                                  ? "bg-[#A3E635] border-[#A3E635] text-[#0f172a] shadow-sm shadow-[#A3E635]/25 font-bold text-[8px]"
+                                  : "bg-[#111827] border-slate-700 text-slate-600 text-[8px]"
+                              }`}
+                            >
+                              {step.checked ? "✓" : idx + 1}
+                            </div>
+                            <div className="text-xs">
+                              <span className={`font-semibold ${step.checked ? "text-white" : "text-slate-500"}`}>{step.label}</span>
+                              {step.checked && <span className="text-[9px] text-[#A3E635] ml-2.5 font-bold uppercase tracking-wide">Selesai</span>}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Blue Card: Invoice final dan form pelunasan */}
-                {invoice && (
-                  <div className="bg-blue-600/10 border border-blue-500/25 p-4.5 rounded-xl flex items-start gap-3.5">
-                    <div className="p-2 bg-blue-500/15 text-blue-400 rounded-lg mt-0.5 border border-blue-500/25">
-                      <File className="h-4.5 w-4.5" />
-                    </div>
-                    <div className="text-xs flex-1 space-y-1">
-                      <div className="font-bold text-white">Invoice final dan form pelunasan sudah tersedia</div>
-                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                        {balance > 0
-                          ? "Kamu sudah bisa membuka invoice final dan melanjutkan proses pelunasan untuk booking ini."
-                          : "Booking ini sudah lunas. Invoice final tetap bisa dibuka kembali kapan saja dari bagian ini."}
-                      </p>
-                      <Link
-                        href={`/form-pelunasan/${booking.id}`}
-                        className="inline-flex items-center gap-1 text-[10px] text-blue-400 hover:text-white font-bold transition-all pt-1.5 uppercase tracking-wide cursor-pointer"
-                      >
-                        Lihat Invoice Final di bawah ➔
-                      </Link>
-                    </div>
-                  </div>
-                )}
-
-                {/* Green Card: File hasil sudah tersedia */}
-                {editedFiles.length > 0 && (
-                  <div className="bg-emerald-600/10 border border-emerald-500/25 p-4.5 rounded-xl flex items-start gap-3.5">
-                    <div className="p-2 bg-emerald-500/15 text-emerald-400 rounded-lg mt-0.5 border border-emerald-500/25">
-                      <FileCheck className="h-4.5 w-4.5" />
-                    </div>
-                    <div className="text-xs flex-1 space-y-1">
-                      <div className="font-bold text-white">File hasil sudah tersedia</div>
-                      <p className="text-slate-400 text-[10px] leading-relaxed">
-                        Kamu sudah bisa mengakses file hasil untuk booking ini. Silakan cek bagian File Hasil di bawah untuk membuka aksesnya.
-                      </p>
-                      <button
-                        onClick={() => setSection("files")}
-                        className="inline-flex items-center gap-1 text-[10px] text-emerald-400 hover:text-white font-bold transition-all pt-1.5 uppercase tracking-wide cursor-pointer text-left"
-                      >
-                        Lihat File Hasil di bawah ➔
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Card PROGRESS (Timeline checklist) */}
-                <div className="bg-[#111827] border border-[#1e293b] rounded-xl p-5 space-y-5">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block border-b border-[#1e293b] pb-2">Riwayat Progress</span>
-                  <div className="space-y-4.5 relative pl-6 before:absolute before:left-[10px] before:top-2.5 before:bottom-2.5 before:w-[2px] before:bg-slate-800">
-                    {[
-                      { label: "Pending", checked: true },
-                      { label: "Booking Dikonfirmasi", checked: booking.status !== "pending" },
-                      { label: "Sesi Foto / Acara", checked: !["pending", "confirmed"].includes(booking.status) },
-                      { label: "Antrian Edit", checked: ["editing", "delivered", "closed"].includes(booking.status) },
-                      { label: "Proses Edit", checked: ["delivered", "closed"].includes(booking.status) || booking.status === "editing" },
-                      { label: "Revisi", checked: ["delivered", "closed"].includes(booking.status) },
-                      { label: "File Siap", checked: ["delivered", "closed"].includes(booking.status) },
-                      { label: "Selesai", checked: booking.status === "closed" }
-                    ].map((step, idx) => (
-                      <div key={idx} className="flex items-center gap-4 relative">
-                        <div
-                          className={`absolute -left-[22px] h-4 w-4 rounded-full flex items-center justify-center border z-10 transition-all ${
-                            step.checked
-                              ? "bg-[#A3E635] border-[#A3E635] text-[#0f172a] shadow-sm shadow-[#A3E635]/25 font-bold text-[8px]"
-                              : "bg-[#111827] border-slate-700 text-slate-600 text-[8px]"
-                          }`}
-                        >
-                          {step.checked ? "✓" : idx + 1}
-                        </div>
-                        <div className="text-xs">
-                          <span className={`font-semibold ${step.checked ? "text-white" : "text-slate-500"}`}>{step.label}</span>
-                          {step.checked && <span className="text-[9px] text-[#A3E635] ml-2.5 font-bold uppercase tracking-wide">Selesai</span>}
-                        </div>
+                  {/* Right Column: Menu Client Action Cards (Image 2) */}
+                  <div className="space-y-4">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Menu Portal Klien</span>
+                    
+                    {/* Green Box: Pilih Foto */}
+                    <div
+                      onClick={() => {
+                        setSection("files");
+                        setFileTab("raw");
+                      }}
+                      className="flex items-center gap-4 p-4 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl cursor-pointer transition-all duration-150 group"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/10 group-hover:scale-105 transition-transform">
+                        <CheckSquare className="h-5 w-5 text-white" />
                       </div>
-                    ))}
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-emerald-400 text-sm group-hover:text-emerald-300 transition-colors">Pilih Foto</h4>
+                        <p className="text-slate-400 text-[10px] mt-0.5">Pilih foto untuk dikirim ke admin</p>
+                      </div>
+                    </div>
+
+                    {/* Orange Box: Pilih Foto Tambahan */}
+                    <div
+                      onClick={() => {
+                        setSection("files");
+                        setFileTab("raw");
+                        toast({
+                          title: "Foto Tambahan",
+                          description: "Silakan pilih foto di tab File Mentah di bawah untuk mengajukan tambahan foto."
+                        });
+                      }}
+                      className="flex items-center gap-4 p-4 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/40 rounded-xl cursor-pointer transition-all duration-150 group"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/10 group-hover:scale-105 transition-transform">
+                        <FileCheck className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-amber-400 text-sm group-hover:text-amber-300 transition-colors">Pilih Foto Tambahan</h4>
+                        <p className="text-slate-400 text-[10px] mt-0.5">Pilih foto tambahan untuk dikirim ke admin</p>
+                      </div>
+                    </div>
+
+                    {/* Purple Box: Pilih Foto Cetak */}
+                    <div
+                      onClick={() => {
+                        setSection("files");
+                        setFileTab("edited");
+                        toast({
+                          title: "Pilih Cetak",
+                          description: "Buka menu file hasil untuk memilih foto & ukuran cetak."
+                        });
+                      }}
+                      className="flex items-center gap-4 p-4 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/20 hover:border-purple-500/40 rounded-xl cursor-pointer transition-all duration-150 group"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-purple-500/10 group-hover:scale-105 transition-transform">
+                        <Printer className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-purple-400 text-sm group-hover:text-purple-300 transition-colors">Pilih Foto Cetak</h4>
+                        <p className="text-slate-400 text-[10px] mt-0.5">Pilih foto & ukuran cetak</p>
+                      </div>
+                    </div>
+
+                    {/* Blue Box: Download Foto */}
+                    <div
+                      onClick={() => {
+                        setSection("files");
+                        setFileTab("edited");
+                      }}
+                      className="flex items-center gap-4 p-4 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/40 rounded-xl cursor-pointer transition-all duration-150 group"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10 group-hover:scale-105 transition-transform">
+                        <Download className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-blue-400 text-sm group-hover:text-blue-300 transition-colors">Download Foto</h4>
+                        <p className="text-slate-400 text-[10px] mt-0.5">Unduh foto ke perangkat Anda</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
