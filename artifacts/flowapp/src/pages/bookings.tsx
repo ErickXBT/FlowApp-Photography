@@ -6,6 +6,7 @@ import {
   useDeleteBooking,
   useListClients,
   useListPackages,
+  useListCategories,
   getListBookingsQueryKey,
   getGetDashboardSummaryQueryKey,
   ClientOrigin,
@@ -75,6 +76,7 @@ export default function Bookings() {
   const { data: bookings, isLoading, error } = useListBookings();
   const { data: clients } = useListClients();
   const { data: packages } = useListPackages();
+  const { data: categories } = useListCategories();
 
   const createBooking = useCreateBooking({
     mutation: {
@@ -444,9 +446,9 @@ export default function Bookings() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Tipe / Lokasi</div>
-                    <div className="font-bold text-slate-300 mt-0.5 truncate max-w-[120px]" title={booking.locationName || "Wisuda / Akad"}>
-                      {booking.locationName || "Wisuda / Akad"}
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Kategori / Tipe</div>
+                    <div className="font-bold text-slate-350 mt-0.5 truncate max-w-[120px]" title={booking.categoryId && categories ? categories.find(c => c.id === booking.categoryId)?.name : "Wisuda / Akad"}>
+                      {booking.categoryId && categories ? categories.find(c => c.id === booking.categoryId)?.name : "Wisuda / Akad"}
                     </div>
                   </div>
                   <div>
