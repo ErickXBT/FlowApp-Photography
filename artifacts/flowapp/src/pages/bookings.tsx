@@ -437,8 +437,8 @@ export default function Bookings() {
                   </div>
                 </div>
 
-                {/* Details Middle: Event, Package, Payment Info */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 text-[10px] text-slate-450 xl:border-l xl:border-[#1e293b] xl:pl-5 py-1 min-w-[280px] flex-1">
+                {/* Details Middle: Event, Package, Location, Origin, Payment Info */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-x-6 gap-y-3 text-[10px] text-slate-450 xl:border-l xl:border-[#1e293b] xl:pl-5 py-1 min-w-[320px] flex-1">
                   <div>
                     <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Paket Acara</div>
                     <div className="font-bold text-white mt-0.5 truncate max-w-[120px]" title={booking.packageName || "Custom Package"}>
@@ -449,6 +449,26 @@ export default function Bookings() {
                     <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Kategori / Tipe</div>
                     <div className="font-bold text-slate-350 mt-0.5 truncate max-w-[120px]" title={booking.categoryId && categories ? categories.find(c => c.id === booking.categoryId)?.name : "Wisuda / Akad"}>
                       {booking.categoryId && categories ? categories.find(c => c.id === booking.categoryId)?.name : "Wisuda / Akad"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Lokasi Foto</div>
+                    <div className="font-bold text-slate-300 mt-0.5 truncate max-w-[120px]" title={booking.locationName || "Indoor/Studio"}>
+                      {booking.locationName || "Indoor/Studio"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Asal Klien</div>
+                    <div className="font-bold text-white mt-0.5">
+                      {booking.clientOrigin === "local"
+                        ? "Lokal"
+                        : booking.clientOrigin === "out_of_city"
+                        ? "Luar Kota"
+                        : booking.clientOrigin === "out_of_island"
+                        ? "Luar Pulau"
+                        : booking.clientOrigin === "international"
+                        ? "Internasional"
+                        : "Lokal"}
                     </div>
                   </div>
                   <div>
