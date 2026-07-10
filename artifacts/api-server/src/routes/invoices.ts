@@ -13,15 +13,14 @@ import { shapeInvoiceListItem, shapeBookingListItem, computeInvoiceStatus } from
 import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
-router.use(requireVendor);
 
-router.get("/invoices", async (_req, res): Promise<void> => {
+router.get("/invoices", requireVendor, async (_req, res): Promise<void> => {
   const invoices = await db.select().from(invoicesTable).orderBy(desc(invoicesTable.issueDate));
   const shaped = (await Promise.all(invoices.map((i) => shapeInvoiceListItem(i.id)))).filter((x) => x !== null);
   res.json(ListInvoicesResponse.parse(shaped));
 });
 
-router.get("/invoices/:id", async (req, res): Promise<void> => {
+router.get("/invoices/:id", requireVendor, async (req, res): Promise<void> => {
   const params = GetInvoiceParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -43,7 +42,7 @@ router.get("/invoices/:id", async (req, res): Promise<void> => {
   );
 });
 
-router.patch("/invoices/:id/payment", async (req, res): Promise<void> => {
+router.patch("/invoices/:id/payment", requireVendor, async (req, res): Promise<void> => {
   const params = UpdateInvoicePaymentParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

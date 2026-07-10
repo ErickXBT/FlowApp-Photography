@@ -4,15 +4,14 @@ import { eq } from "drizzle-orm";
 import { requireAuth } from "../lib/auth";
 
 const router = Router();
-router.use(requireAuth);
 
-router.get("/dress-catalog", async (req, res) => {
+router.get("/dress-catalog", requireAuth, async (req, res) => {
   const tenantId = req.session.tenantId ?? 1;
   const items = await db.select().from(dressCatalog).where(eq(dressCatalog.tenantId, tenantId));
   res.json(items);
 });
 
-router.post("/dress-catalog", async (req, res) => {
+router.post("/dress-catalog", requireAuth, async (req, res) => {
   const tenantId = req.session.tenantId ?? 1;
   const { name, type, size, color, status, imageUrl, notes } = req.body as {
     name: string; type?: string; size?: string; color?: string;
@@ -31,7 +30,7 @@ router.post("/dress-catalog", async (req, res) => {
   res.status(201).json(item);
 });
 
-router.patch("/dress-catalog/:id", async (req, res) => {
+router.patch("/dress-catalog/:id", requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   const { name, type, size, color, status, imageUrl, notes } = req.body as {
     name?: string; type?: string; size?: string; color?: string;
@@ -49,7 +48,7 @@ router.patch("/dress-catalog/:id", async (req, res) => {
   res.json(updated);
 });
 
-router.delete("/dress-catalog/:id", async (req, res) => {
+router.delete("/dress-catalog/:id", requireAuth, async (req, res) => {
   await db.delete(dressCatalog).where(eq(dressCatalog.id, Number(req.params.id)));
   res.json({ ok: true });
 });

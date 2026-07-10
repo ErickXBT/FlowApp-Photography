@@ -24,6 +24,8 @@ interface TenantProfile {
   tiktok?: string;
   youtube?: string;
   ctaText?: string;
+  pricelistUrl?: string;
+
 
   // Default Project Configurations
   defaultWhatsappAdmin?: string;
@@ -352,6 +354,18 @@ export default function Settings() {
                   onChange={url => setProfile(p => p ? { ...p, profilePhotoUrl: url } : null)}
                   accept="image/*"
                 />
+
+                <ImageUpload
+                  label="Upload Pricelist (Foto / PDF)"
+                  value={profile?.pricelistUrl ?? ""}
+                  onChange={url => setProfile(p => p ? { ...p, pricelistUrl: url } : null)}
+                  accept="image/*,application/pdf"
+                />
+
+                <div className="space-y-1.5">
+                  <Label className="text-[#94a3b8] text-xs">Atau Tautan Pricelist Eksternal</Label>
+                  <Input value={profile?.pricelistUrl ?? ""} onChange={e => setProfile(p => p ? { ...p, pricelistUrl: e.target.value } : null)} className="bg-[#0f172a] border-[#374151] text-white text-sm" placeholder="https://drive.google.com/..." />
+                </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <div className="space-y-1.5">

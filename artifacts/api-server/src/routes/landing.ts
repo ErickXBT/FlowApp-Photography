@@ -74,7 +74,8 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     tplPengingatOriginal,
     tplPengingatTambahan,
     clientDeskActive,
-    clientDeskApiKey
+    clientDeskApiKey,
+    pricelistUrl
   } = req.body as {
     bio?: string; profilePhotoUrl?: string; bannerUrl?: string;
     whatsapp?: string; instagram?: string; website?: string; tiktok?: string; youtube?: string; ctaText?: string; studioName?: string;
@@ -116,6 +117,7 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     tplPengingatTambahan?: string;
     clientDeskActive?: boolean;
     clientDeskApiKey?: string;
+    pricelistUrl?: string;
   };
   const [updated] = await db.update(tenants).set({
     ...(bio !== undefined && { bio }),
@@ -166,7 +168,9 @@ router.patch("/landing/me/profile", requireAuth, async (req, res) => {
     ...(tplPengingatTambahan !== undefined && { tplPengingatTambahan }),
     ...(clientDeskActive !== undefined && { clientDeskActive }),
     ...(clientDeskApiKey !== undefined && { clientDeskApiKey }),
+    ...(pricelistUrl !== undefined && { pricelistUrl }),
   }).where(eq(tenants.id, tenantId)).returning();
+
   res.json(updated);
 });
 
@@ -200,4 +204,19 @@ router.delete("/landing/me/catalog/:id", requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
+router.get("/landing/:slug/availabilities", async (req, res) => {
+  const [tenant] = await db.select().from(tenants).where(eq(tenants.slug, req.params.slug)).limit(1);
+  if (!tenant) {
+    res.status(404).json({ error: "Tenant not found" });
+    return;
+  }
+  const { dateAvailabilitiesTable } = await import("@workspace/db");
+  const availabilities = await db
+    .select()
+    .from(dateAvailabilitiesTable)
+    .where(eq(dateAvailabilitiesTable.tenantId, tenant.id));
+  res.json(availabilities);
+});
+
 export default router;
+

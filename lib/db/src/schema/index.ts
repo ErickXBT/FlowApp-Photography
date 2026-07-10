@@ -12,4 +12,5 @@ export * from "./dress-catalog";
 export * from "./reschedule-requests";
 export * from "./landing-catalog";
 export * from "./session";
+export * from "./date-availabilities";
 

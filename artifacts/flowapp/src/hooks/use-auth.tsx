@@ -14,6 +14,7 @@ export interface AuthUser {
     plan: string;
     planExpiresAt: string | null;
     whatsapp?: string | null;
+    profilePhotoUrl?: string | null;
   } | null;
 }
 

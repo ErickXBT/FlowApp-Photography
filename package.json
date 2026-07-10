@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "dev": "pnpm -r --filter @workspace/api-server --filter @workspace/flowapp --parallel run dev",
     "preinstall": "node -e \"const fs = require('fs'); const files = ['package-lock.json', 'yarn.lock']; for (let i = 0; i < files.length; i++) { try { fs.unlinkSync(files[i]); } catch (e) {} } const ua = process.env.npm_config_user_agent || ''; if (!/^pnpm\\//.test(ua)) { console.error('Use pnpm instead'); process.exit(1); }\"",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",

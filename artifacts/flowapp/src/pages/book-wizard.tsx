@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+
 import { Link } from "wouter";
 import {
   useListCategories,
@@ -41,6 +42,27 @@ export default function BookWizard() {
   const [specialRequest, setSpecialRequest] = useState("");
   const [moodboardLink, setMoodboardLink] = useState("");
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const slug = queryParams.get("slug") || "studio-senja";
+  const [availabilities, setAvailabilities] = useState<Array<{ selectedDate: string; status: string }>>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/landing/${slug}/availabilities`);
+        if (res.ok) setAvailabilities(await res.json());
+      } catch (e) {
+        console.error("Failed to load availabilities", e);
+      }
+    };
+    load();
+  }, [slug]);
+
+  const dateStatus = useMemo(() => {
+    if (!eventDate) return "available";
+    return availabilities.find((a) => a.selectedDate === eventDate)?.status ?? "available";
+  }, [eventDate, availabilities]);
+
   const { data: categories, isLoading: loadingCategories } = useListCategories();
   const { data: allPackages, isLoading: loadingPackages } = useListPackages();
   const { data: teamMembers } = useListTeamMembers();
@@ -63,11 +85,12 @@ export default function BookWizard() {
     switch (step) {
       case 0: return categoryId !== null;
       case 1: return packageId !== null;
-      case 2: return eventDate.length > 0;
+      case 2: return eventDate.length > 0 && dateStatus !== "full_booking";
       case 3: return name.length > 0 && email.length > 0 && whatsapp.length > 0;
       default: return true;
     }
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -184,6 +207,25 @@ export default function BookWizard() {
               <div className="space-y-2">
                 <Label>Event Date</Label>
                 <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
+                {eventDate && (
+                  <div className="pt-2">
+                    {dateStatus === "full_booking" && (
+                      <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold">
+                        ⚠ Maaf, slot booking untuk tanggal ini sudah penuh (Full Booking). Silakan pilih tanggal lain.
+                      </div>
+                    )}
+                    {dateStatus === "last_slot" && (
+                      <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 rounded-lg text-xs font-semibold">
+                        ⚠ Sisa 1 slot untuk tanggal ini! Harap segera menyelesaikan booking Anda.
+                      </div>
+                    )}
+                    {dateStatus === "available" && (
+                      <div className="p-3 bg-green-500/10 border border-green-500/30 text-green-400 rounded-lg text-xs font-semibold">
+                        ✓ Tanggal ini tersedia untuk booking.
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label>Location Name</Label>

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BookingStatus } from './bookingStatus';
+import type { TeamMember } from './teamMember';
 
 export interface CalendarEntry {
   id: number;
@@ -13,4 +14,5 @@ export interface CalendarEntry {
   packageName: string;
   eventDate: Date;
   status: BookingStatus;
+  teamMembers?: TeamMember[];
 }

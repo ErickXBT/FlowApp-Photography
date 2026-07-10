@@ -76,4 +76,7 @@ export const tenants = pgTable("tenants", {
   // Telegram Bot Settings
   telegramBotToken: text("telegram_bot_token"),
   telegramChatId: text("telegram_chat_id"),
+
+  // Pricelist settings
+  pricelistUrl: text("pricelist_url"),
 });

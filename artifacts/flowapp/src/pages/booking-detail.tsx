@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRoute, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -8,6 +8,8 @@ import {
   useCreateBookingFile,
   useToggleFileSelection,
   useDeleteBookingFile,
+  useListTeamMembers,
+  useUpdateBooking,
   getGetBookingQueryKey,
   getListBookingFilesQueryKey,
   getGetDashboardSummaryQueryKey,
@@ -15,6 +17,7 @@ import {
   BookingStatus,
   FolderType,
 } from "@workspace/api-client-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +90,27 @@ export default function BookingDetail() {
   });
 
   const clientPortalUrl = typeof window !== "undefined" ? `${window.location.origin}/client/bookings/${id}` : "";
+
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const [selectedTeamIds, setSelectedTeamIds] = useState<number[]>([]);
+  const { data: teamMembers, isLoading: loadingTeam } = useListTeamMembers();
+
+  const updateBooking = useUpdateBooking({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetBookingQueryKey(id) });
+        queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
+        toast({ title: "Penugasan tim diperbarui" });
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (booking) {
+      setSelectedTeamIds(booking.teamMembers.map(tm => tm.id));
+    }
+  }, [booking, teamDialogOpen]);
+
 
   if (isLoading) {
     return (
@@ -161,16 +185,22 @@ export default function BookingDetail() {
             {booking.locationAddress && (
               <div className="flex justify-between"><span className="text-muted-foreground">Address</span><span className="text-right max-w-xs">{booking.locationAddress}</span></div>
             )}
-            {booking.teamMembers.length > 0 && (
-              <div className="flex justify-between items-start">
-                <span className="text-muted-foreground">Team</span>
-                <div className="flex flex-wrap gap-1 justify-end max-w-xs">
+            <div className="flex justify-between items-start pt-2 border-t">
+              <span className="text-muted-foreground">Team</span>
+              <div className="flex flex-col items-end gap-1.5 max-w-xs">
+                <div className="flex flex-wrap gap-1 justify-end">
                   {booking.teamMembers.map((tm) => (
                     <Badge key={tm.id} variant="secondary" className="capitalize">{tm.name} · {tm.role.replace("_", " ")}</Badge>
                   ))}
+                  {booking.teamMembers.length === 0 && (
+                    <span className="text-muted-foreground text-xs">Belum ada tim ditugaskan</span>
+                  )}
                 </div>
+                <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" onClick={() => setTeamDialogOpen(true)}>
+                  Kelola Tim
+                </Button>
               </div>
-            )}
+            </div>
             {booking.addOns.length > 0 && (
               <div className="flex justify-between items-start">
                 <span className="text-muted-foreground">Add-ons</span>
@@ -295,6 +325,59 @@ export default function BookingDetail() {
           ))}
         </CardContent>
       </Card>
+
+      {/* Dialog Kelola Tim */}
+      <Dialog open={teamDialogOpen} onOpenChange={setTeamDialogOpen}>
+        <DialogContent className="bg-[#1e293b] border-[#2d3748] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Tugaskan Kru Freelance / Tim</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+            {loadingTeam ? (
+              <Skeleton className="h-40 w-full" />
+            ) : (
+              <div className="space-y-2">
+                {teamMembers?.map((tm) => {
+                  const isChecked = selectedTeamIds.includes(tm.id);
+                  return (
+                    <label key={tm.id} className="flex items-center gap-3 border border-[#2d3748] rounded-md p-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Checkbox
+                        checked={isChecked}
+                        onCheckedChange={(checked) =>
+                          setSelectedTeamIds(checked 
+                            ? [...selectedTeamIds, tm.id] 
+                            : selectedTeamIds.filter((id) => id !== tm.id)
+                          )
+                        }
+                      />
+                      <span className="flex-1 text-sm font-medium text-white">{tm.name}</span>
+                      <Badge variant="secondary" className="capitalize">{tm.role.replace("_", " ")}</Badge>
+                    </label>
+                  );
+                })}
+                {teamMembers?.length === 0 && (
+                  <p className="text-muted-foreground text-sm text-center py-4">Belum ada tim terdaftar.</p>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              disabled={updateBooking.isPending}
+              onClick={() => {
+                updateBooking.mutate({
+                  id,
+                  data: { teamMemberIds: selectedTeamIds }
+                });
+                setTeamDialogOpen(false);
+              }}
+              className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold"
+            >
+              Simpan Penugasan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

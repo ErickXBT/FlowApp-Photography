@@ -16,18 +16,17 @@ import {
 import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
-router.use(requireVendor);
 
 function toNumericPackage<T extends { price: string | number }>(pkg: T) {
   return { ...pkg, price: Number(pkg.price) };
 }
 
-router.get("/packages", async (_req, res): Promise<void> => {
+router.get("/packages", requireVendor, async (_req, res): Promise<void> => {
   const packages = await db.select().from(packagesTable).orderBy(packagesTable.name);
   res.json(ListPackagesResponse.parse(packages.map(toNumericPackage)));
 });
 
-router.post("/packages", async (req, res): Promise<void> => {
+router.post("/packages", requireVendor, async (req, res): Promise<void> => {
   const parsed = CreatePackageBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -40,7 +39,7 @@ router.post("/packages", async (req, res): Promise<void> => {
   res.status(201).json(CreatePackageResponse.parse(toNumericPackage(pkg)));
 });
 
-router.get("/packages/:id", async (req, res): Promise<void> => {
+router.get("/packages/:id", requireVendor, async (req, res): Promise<void> => {
   const params = GetPackageParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -54,7 +53,7 @@ router.get("/packages/:id", async (req, res): Promise<void> => {
   res.json(GetPackageResponse.parse(toNumericPackage(pkg)));
 });
 
-router.patch("/packages/:id", async (req, res): Promise<void> => {
+router.patch("/packages/:id", requireVendor, async (req, res): Promise<void> => {
   const params = UpdatePackageParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -78,7 +77,7 @@ router.patch("/packages/:id", async (req, res): Promise<void> => {
   res.json(UpdatePackageResponse.parse(toNumericPackage(pkg)));
 });
 
-router.delete("/packages/:id", async (req, res): Promise<void> => {
+router.delete("/packages/:id", requireVendor, async (req, res): Promise<void> => {
   const params = DeletePackageParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

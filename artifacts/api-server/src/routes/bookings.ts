@@ -20,53 +20,104 @@ import { shapeBookingListItem, shapeBookingListItems, shapeBookingDetail } from 
 import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
-router.use(requireVendor);
+import { seedRawPhotosFromDrive } from "../lib/drive";
 
-async function seedRawPhotosFromDrive(bookingId: number, googleDriveLink: string | null | undefined) {
-  if (!googleDriveLink || googleDriveLink.trim() === "") return;
+router.get("/bookings/:id/debug-db", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  const [b] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, id)).limit(1);
+  const files = await db.select().from(deliveryFilesTable).where(eq(deliveryFilesTable.bookingId, id));
+  res.json({ booking: b, files: files });
+});
 
-  const existingRaw = await db
+// Public client portal endpoints (NO requireVendor)
+router.get("/bookings/:id", async (req, res): Promise<void> => {
+  const params = GetBookingParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, params.data.id));
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+  res.json(GetBookingResponse.parse(await shapeBookingDetail(booking)));
+});
+
+router.patch("/bookings/:id/submit-selection", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid booking ID" });
+    return;
+  }
+
+  const [booking] = await db
+    .select()
+    .from(bookingsTable)
+    .where(eq(bookingsTable.id, id))
+    .limit(1);
+
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  // Count selected raw files to ensure they selected at least 1
+  const selectedRawFiles = await db
     .select()
     .from(deliveryFilesTable)
     .where(
       and(
-        eq(deliveryFilesTable.bookingId, bookingId),
-        eq(deliveryFilesTable.folderType, "raw")
+        eq(deliveryFilesTable.bookingId, id),
+        eq(deliveryFilesTable.folderType, "raw"),
+        eq(deliveryFilesTable.selected, true)
       )
     );
 
-  if (existingRaw.length > 0) return;
+  if (selectedRawFiles.length === 0) {
+    res.status(400).json({ error: "Anda harus memilih minimal 1 foto sebelum mengirim." });
+    return;
+  }
 
-  const mockUrls = [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1507504038482-762102124e1d?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1519225495810-7512c696505a?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1519741621253-27a9223cb20a?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1510076894075-85c547200e28?w=800&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1529636798458-92182e65f13d?w=800&auto=format&fit=crop&q=60"
-  ];
+  // Read optional client special request/notes for editing
+  const { specialRequest } = req.body || {};
 
-  const values = mockUrls.map((url, idx) => ({
-    bookingId,
-    folderType: "raw" as const,
-    fileName: `RAW_DSC_${String(idx + 1).padStart(4, "0")}.jpg`,
-    fileUrl: url,
-    selected: false
-  }));
+  // Set booking status to "editing" and save notes
+  const [updated] = await db
+    .update(bookingsTable)
+    .set({ 
+      status: "editing",
+      specialRequest: specialRequest !== undefined ? specialRequest : booking.specialRequest
+    })
+    .where(eq(bookingsTable.id, id))
+    .returning();
 
-  await db.insert(deliveryFilesTable).values(values);
-}
+  res.json(GetBookingResponse.parse(await shapeBookingDetail(updated)));
+});
 
-router.get("/bookings", async (req, res): Promise<void> => {
+router.post("/bookings/:id/sync", async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid booking ID" });
+    return;
+  }
+  const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, id)).limit(1);
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+  if (!booking.googleDriveLink) {
+    res.status(400).json({ error: "Booking does not have a Google Drive link." });
+    return;
+  }
+
+  await seedRawPhotosFromDrive(booking.id, booking.googleDriveLink);
+  res.json({ success: true });
+});
+
+// Require vendor authentication for all routes below
+
+router.get("/bookings", requireVendor, async (req, res): Promise<void> => {
   const query = ListBookingsQueryParams.safeParse(req.query);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
@@ -80,7 +131,7 @@ router.get("/bookings", async (req, res): Promise<void> => {
   res.json(ListBookingsResponse.parse(await shapeBookingListItems(bookings)));
 });
 
-router.post("/bookings", async (req, res): Promise<void> => {
+router.post("/bookings", requireVendor, async (req, res): Promise<void> => {
   const parsed = CreateBookingBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -165,21 +216,7 @@ router.post("/bookings", async (req, res): Promise<void> => {
   res.status(201).json(CreateBookingResponse.parse(await shapeBookingListItem(booking)));
 });
 
-router.get("/bookings/:id", async (req, res): Promise<void> => {
-  const params = GetBookingParams.safeParse(req.params);
-  if (!params.success) {
-    res.status(400).json({ error: params.error.message });
-    return;
-  }
-  const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, params.data.id));
-  if (!booking) {
-    res.status(404).json({ error: "Booking not found" });
-    return;
-  }
-  res.json(GetBookingResponse.parse(await shapeBookingDetail(booking)));
-});
-
-router.patch("/bookings/:id", async (req, res): Promise<void> => {
+router.patch("/bookings/:id", requireVendor, async (req, res): Promise<void> => {
   const params = UpdateBookingParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -204,7 +241,7 @@ router.patch("/bookings/:id", async (req, res): Promise<void> => {
   res.json(UpdateBookingResponse.parse(await shapeBookingListItem(booking)));
 });
 
-router.delete("/bookings/:id", async (req, res): Promise<void> => {
+router.delete("/bookings/:id", requireVendor, async (req, res): Promise<void> => {
   const params = DeleteBookingParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -218,7 +255,7 @@ router.delete("/bookings/:id", async (req, res): Promise<void> => {
   res.sendStatus(204);
 });
 
-router.patch("/bookings/:id/status", async (req, res): Promise<void> => {
+router.patch("/bookings/:id/status", requireVendor, async (req, res): Promise<void> => {
   const params = UpdateBookingStatusParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

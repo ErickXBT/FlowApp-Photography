@@ -3,7 +3,8 @@ import { useRoute } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Camera, Instagram, Globe2, MessageCircle, ArrowRight, Youtube, Music } from "lucide-react";
+import { Camera, Instagram, Globe2, MessageCircle, ArrowRight, Youtube, Music, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface LandingData {
   id: number;
@@ -18,14 +19,27 @@ interface LandingData {
   tiktok?: string;
   youtube?: string;
   ctaText?: string;
+  pricelistUrl?: string;
   catalog: Array<{ id: number; title?: string; type: string; url: string; thumbnailUrl?: string }>;
 }
+
 
 export default function LandingPage() {
   const [match, params] = useRoute<{ slug: string }>("/p/:slug");
   const [landing, setLanding] = useState<LandingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pricelistOpen, setPricelistOpen] = useState(false);
+
+  const handlePricelistClick = (url: string) => {
+    const isImage = /\.(jpg|jpeg|png|webp|gif)/i.test(url);
+    if (isImage) {
+      setPricelistOpen(true);
+    } else {
+      window.open(url, "_blank");
+    }
+  };
+
 
   useEffect(() => {
     const load = async () => {
@@ -105,6 +119,14 @@ export default function LandingPage() {
                   <a href={`https://wa.me/${landing.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#A3E635] px-4 py-2 text-sm font-semibold text-[#1F2937] transition hover:bg-[#bef264]">
                     <MessageCircle className="h-4 w-4" /> Chat WhatsApp
                   </a>
+                ) : null}
+                {landing.pricelistUrl ? (
+                  <button
+                    onClick={() => handlePricelistClick(landing.pricelistUrl!)}
+                    className="inline-flex items-center gap-2 rounded-full border border-[#A3E635] bg-[#A3E635]/10 px-4 py-2 text-sm font-semibold text-[#A3E635] transition hover:bg-[#A3E635]/25 cursor-pointer"
+                  >
+                    <FileText className="h-4 w-4" /> Lihat Pricelist
+                  </button>
                 ) : null}
                 {landing.instagram ? (
                   <a href={`https://instagram.com/${landing.instagram.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-[#374151] bg-[#111827] px-4 py-2 text-sm text-white transition hover:border-[#A3E635] hover:text-[#A3E635]">
@@ -215,6 +237,20 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
+      <Dialog open={pricelistOpen} onOpenChange={setPricelistOpen}>
+        <DialogContent className="max-w-3xl bg-[#111827] border-[#374151] text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Pricelist {landing?.studioName}</DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center p-2 bg-[#0F172A] rounded-xl border border-[#374151] overflow-hidden max-h-[75vh]">
+            <img
+              src={landing?.pricelistUrl}
+              alt="Pricelist"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

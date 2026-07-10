@@ -24,12 +24,20 @@ import BookWizard from "@/pages/book-wizard";
 import DressCatalog from "@/pages/dress-catalog";
 import RescheduleCenter from "@/pages/reschedule-center";
 import Settings from "@/pages/settings";
+import PhotoSelection from "@/pages/photo-selection";
 import LandingPage from "@/pages/landing";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminPlans from "@/pages/admin/plans";
 import AdminActivity from "@/pages/admin/activity";
 import AdminSettings from "@/pages/admin/settings";
 import NewTenant from "@/pages/admin/tenants";
+import StatusBooking from "@/pages/status-booking";
+import FinanceSummary from "@/pages/finance-summary";
+import FormBookingSettings from "@/pages/form-booking-settings";
+import TeamPortal from "@/pages/team-portal";
+import FormPelunasan from "@/pages/form-pelunasan";
+import PhotoSplitExpress from "@/pages/photo-split";
+import RawFileCopyTool from "@/pages/raw-copy";
 
 const queryClient = new QueryClient();
 
@@ -57,10 +65,24 @@ function Router() {
           <ClientPortal />
         </PublicLayout>
       </Route>
+      <Route path="/form-pelunasan/:id">
+        <PublicLayout>
+          <FormPelunasan />
+        </PublicLayout>
+      </Route>
 
       {/* Vendor Routes */}
       <Route path="/dashboard">
         <VendorLayout><Dashboard /></VendorLayout>
+      </Route>
+      <Route path="/status-booking">
+        <VendorLayout><StatusBooking /></VendorLayout>
+      </Route>
+      <Route path="/finance-summary">
+        <VendorLayout><FinanceSummary /></VendorLayout>
+      </Route>
+      <Route path="/photo-selection">
+        <VendorLayout><PhotoSelection /></VendorLayout>
       </Route>
       <Route path="/bookings/:id">
         <VendorLayout><BookingDetail /></VendorLayout>
@@ -97,6 +119,18 @@ function Router() {
       </Route>
       <Route path="/settings">
         <VendorLayout><Settings /></VendorLayout>
+      </Route>
+      <Route path="/form-booking">
+        <VendorLayout><FormBookingSettings /></VendorLayout>
+      </Route>
+      <Route path="/team-portal">
+        <VendorLayout><TeamPortal /></VendorLayout>
+      </Route>
+      <Route path="/photo-split">
+        <VendorLayout><PhotoSplitExpress /></VendorLayout>
+      </Route>
+      <Route path="/raw-copy">
+        <VendorLayout><RawFileCopyTool /></VendorLayout>
       </Route>
 
       {/* Admin Routes */}

@@ -16,14 +16,13 @@ import { shapeBookingListItems } from "../lib/shape";
 import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
-router.use(requireVendor);
 
-router.get("/clients", async (_req, res): Promise<void> => {
+router.get("/clients", requireVendor, async (_req, res): Promise<void> => {
   const clients = await db.select().from(clientsTable).orderBy(desc(clientsTable.createdAt));
   res.json(ListClientsResponse.parse(clients));
 });
 
-router.post("/clients", async (req, res): Promise<void> => {
+router.post("/clients", requireVendor, async (req, res): Promise<void> => {
   const parsed = CreateClientBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -33,7 +32,7 @@ router.post("/clients", async (req, res): Promise<void> => {
   res.status(201).json(CreateClientResponse.parse(client));
 });
 
-router.get("/clients/:id", async (req, res): Promise<void> => {
+router.get("/clients/:id", requireVendor, async (req, res): Promise<void> => {
   const params = GetClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -54,7 +53,7 @@ router.get("/clients/:id", async (req, res): Promise<void> => {
   res.json(GetClientResponse.parse({ ...client, bookings: shaped, totalSpent }));
 });
 
-router.patch("/clients/:id", async (req, res): Promise<void> => {
+router.patch("/clients/:id", requireVendor, async (req, res): Promise<void> => {
   const params = UpdateClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -77,7 +76,7 @@ router.patch("/clients/:id", async (req, res): Promise<void> => {
   res.json(UpdateClientResponse.parse(client));
 });
 
-router.delete("/clients/:id", async (req, res): Promise<void> => {
+router.delete("/clients/:id", requireVendor, async (req, res): Promise<void> => {
   const params = DeleteClientParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

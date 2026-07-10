@@ -787,7 +787,16 @@ export const GetCalendarBookingsResponseItem = zod.object({
   "clientName": zod.string(),
   "packageName": zod.string(),
   "eventDate": zod.coerce.date(),
-  "status": zod.enum(['pending', 'dp_paid', 'fully_paid', 'shooting', 'editing', 'delivered', 'closed'])
+  "status": zod.enum(['pending', 'dp_paid', 'fully_paid', 'shooting', 'editing', 'delivered', 'closed']),
+  "teamMembers": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "photoUrl": zod.string().nullish(),
+  "bio": zod.string().nullish(),
+  "portfolioUrl": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})).optional()
 })
 export const GetCalendarBookingsResponse = zod.array(GetCalendarBookingsResponseItem)
 

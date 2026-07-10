@@ -26,7 +26,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
   fileFilter: (_req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif|webp|mp4|mov|mkv|avi/;
+    const allowed = /jpeg|jpg|png|gif|webp|pdf|mp4|mov|mkv|avi/;
     const ok = allowed.test(path.extname(file.originalname).toLowerCase()) || allowed.test(file.mimetype);
     cb(null, ok);
   },

@@ -13,18 +13,17 @@ import {
 import { requireVendor } from "../lib/auth";
 
 const router: IRouter = Router();
-router.use(requireVendor);
 
 function toNumericAddOn<T extends { price: string | number }>(a: T) {
   return { ...a, price: Number(a.price) };
 }
 
-router.get("/add-ons", async (_req, res): Promise<void> => {
+router.get("/add-ons", requireVendor, async (_req, res): Promise<void> => {
   const addOns = await db.select().from(addOnsTable).orderBy(addOnsTable.name);
   res.json(ListAddOnsResponse.parse(addOns.map(toNumericAddOn)));
 });
 
-router.post("/add-ons", async (req, res): Promise<void> => {
+router.post("/add-ons", requireVendor, async (req, res): Promise<void> => {
   const parsed = CreateAddOnBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -37,7 +36,7 @@ router.post("/add-ons", async (req, res): Promise<void> => {
   res.status(201).json(CreateAddOnResponse.parse(toNumericAddOn(addOn)));
 });
 
-router.patch("/add-ons/:id", async (req, res): Promise<void> => {
+router.patch("/add-ons/:id", requireVendor, async (req, res): Promise<void> => {
   const params = UpdateAddOnParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -61,7 +60,7 @@ router.patch("/add-ons/:id", async (req, res): Promise<void> => {
   res.json(UpdateAddOnResponse.parse(toNumericAddOn(addOn)));
 });
 
-router.delete("/add-ons/:id", async (req, res): Promise<void> => {
+router.delete("/add-ons/:id", requireVendor, async (req, res): Promise<void> => {
   const params = DeleteAddOnParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

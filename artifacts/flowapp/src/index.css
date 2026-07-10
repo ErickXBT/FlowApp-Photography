@@ -174,3 +174,92 @@
     @apply font-serif;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR HARDCODED DARK STYLES ── */
+html:not(.dark) {
+  --background: 220 15% 95%;
+  --foreground: 220 30% 15%;
+  --card: 0 0% 100%;
+  --border: 220 15% 85%;
+  --muted: 220 15% 90%;
+  --muted-foreground: 220 10% 40%;
+}
+
+html:not(.dark) body {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Background overrides */
+html:not(.dark) .bg-\[\#0f172a\] {
+  background-color: hsl(var(--background)) !important;
+}
+html:not(.dark) .bg-\[\#111827\] {
+  background-color: hsl(var(--card)) !important;
+}
+html:not(.dark) .bg-\[\#1e293b\] {
+  background-color: hsl(var(--muted)) !important;
+}
+html:not(.dark) .bg-\[\#1e293b\]\/20 {
+  background-color: hsla(var(--muted), 0.2) !important;
+}
+html:not(.dark) .bg-\[\#0f172a\]\/20 {
+  background-color: hsla(var(--background), 0.2) !important;
+}
+html:not(.dark) .bg-\[\#0f172a\]\/40 {
+  background-color: hsla(var(--background), 0.4) !important;
+}
+html:not(.dark) .bg-\[\#0f172a\]\/50 {
+  background-color: hsla(var(--background), 0.5) !important;
+}
+html:not(.dark) .bg-black\/40 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Border overrides */
+html:not(.dark) .border-\[\#1e293b\] {
+  border-color: hsl(var(--border)) !important;
+}
+html:not(.dark) .border-\[\#2d3748\] {
+  border-color: hsl(var(--border)) !important;
+}
+html:not(.dark) .border-\[\#374151\] {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Text color overrides to ensure contrast */
+html:not(.dark) .text-white {
+  color: hsl(var(--foreground)) !important;
+}
+html:not(.dark) .text-slate-100 {
+  color: hsl(220 30% 10%) !important;
+}
+html:not(.dark) .text-slate-200 {
+  color: hsl(220 30% 12%) !important;
+}
+html:not(.dark) .text-slate-300 {
+  color: hsl(220 20% 25%) !important;
+}
+html:not(.dark) .text-slate-400 {
+  color: hsl(220 15% 35%) !important;
+}
+html:not(.dark) .text-\[\#94a3b8\] {
+  color: hsl(220 15% 35%) !important;
+}
+html:not(.dark) .text-slate-500 {
+  color: hsl(220 10% 45%) !important;
+}
+html:not(.dark) .text-gray-300 {
+  color: hsl(220 20% 25%) !important;
+}
+html:not(.dark) .text-gray-400 {
+  color: hsl(220 15% 35%) !important;
+}
+
+/* Keep button/badge texts correct if background is primary green */
+html:not(.dark) .bg-\[\#A3E635\] .text-\[\#0f172a\] {
+  color: #0f172a !important;
+}
+html:not(.dark) .text-\[\#A3E635\] {
+  color: #65a30d !important;
+}

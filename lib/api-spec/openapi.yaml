@@ -1187,6 +1187,11 @@ components:
           format: date-time
         status:
           $ref: "#/components/schemas/BookingStatus"
+        teamMembers:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamMember"
+
 
     InvoiceStatus:
       type: string

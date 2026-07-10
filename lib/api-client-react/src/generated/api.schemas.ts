@@ -379,6 +379,7 @@ export interface CalendarEntry {
   packageName: string;
   eventDate: string;
   status: BookingStatus;
+  teamMembers?: TeamMember[];
 }
 
 export interface InvoiceLineItem {

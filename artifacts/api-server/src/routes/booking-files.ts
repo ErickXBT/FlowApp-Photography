@@ -12,10 +12,10 @@ import {
   ToggleFileSelectionBody,
   ToggleFileSelectionResponse,
 } from "@workspace/api-zod";
-import { requireAuth } from "../lib/auth";
+import { requireAuth, requireVendor } from "../lib/auth";
+import { seedRawPhotosFromDrive } from "../lib/drive";
 
 const router: IRouter = Router();
-router.use(requireAuth);
 
 router.get("/bookings/:bookingId/files", async (req, res): Promise<void> => {
   const params = ListBookingFilesParams.safeParse(req.params);
@@ -23,14 +23,41 @@ router.get("/bookings/:bookingId/files", async (req, res): Promise<void> => {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const files = await db
+  
+  // 1. Fetch current files
+  let files = await db
     .select()
     .from(deliveryFilesTable)
     .where(eq(deliveryFilesTable.bookingId, params.data.bookingId));
+
+  // 2. Check if we should trigger an auto-sync from Drive:
+  // - If files is empty (no files at all)
+  // - Or if files contains mock placeholder photos (Unsplash URLs)
+  const hasNoRaw = !files.some(f => f.folderType === "raw");
+  const hasMockRaw = files.some(f => f.folderType === "raw" && f.fileUrl.includes("unsplash.com"));
+
+  if (hasNoRaw || hasMockRaw) {
+    const [booking] = await db
+      .select()
+      .from(bookingsTable)
+      .where(eq(bookingsTable.id, params.data.bookingId))
+      .limit(1);
+
+    if (booking && booking.googleDriveLink) {
+      console.log(`Auto-syncing Google Drive for booking ${booking.id}...`);
+      await seedRawPhotosFromDrive(booking.id, booking.googleDriveLink);
+      // Re-fetch files after syncing
+      files = await db
+        .select()
+        .from(deliveryFilesTable)
+        .where(eq(deliveryFilesTable.bookingId, params.data.bookingId));
+    }
+  }
+
   res.json(ListBookingFilesResponse.parse(files));
 });
 
-router.post("/bookings/:bookingId/files", async (req, res): Promise<void> => {
+router.post("/bookings/:bookingId/files", requireVendor, async (req, res): Promise<void> => {
   const params = CreateBookingFileParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -48,7 +75,7 @@ router.post("/bookings/:bookingId/files", async (req, res): Promise<void> => {
   res.status(201).json(CreateBookingFileResponse.parse(file));
 });
 
-router.delete("/files/:id", async (req, res): Promise<void> => {
+router.delete("/files/:id", requireVendor, async (req, res): Promise<void> => {
   const params = DeleteBookingFileParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
