@@ -144,7 +144,7 @@ export function VendorLayout({ children }: { children: React.ReactNode }) {
       items: [
         { name: "Ringkasan Keuangan", href: "/finance-summary", icon: TrendingUp },
         { name: "Invoice & Pelunasan", href: "/invoices", icon: FileText },
-        { name: "Pembayaran Tim", href: "#", icon: FileText, isComingSoon: true },
+        { name: "Pembayaran Tim", href: "/team-payments", icon: FileText },
       ]
     },
     {
@@ -152,7 +152,7 @@ export function VendorLayout({ children }: { children: React.ReactNode }) {
       items: [
         { name: "Form Booking", href: "/form-booking", icon: ClipboardList },
         { name: "Form Pelunasan", href: "/form-pelunasan/9", icon: ClipboardList },
-        { name: "Form Booking Khusus", href: "#", icon: ClipboardList, isComingSoon: true },
+        { name: "Form Booking Khusus", href: "/custom-booking-form", icon: ClipboardList },
         { name: "Segera Hadir", href: "#", icon: Sparkles, isSpecial: true },
       ]
     }

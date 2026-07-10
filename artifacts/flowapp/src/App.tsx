@@ -38,6 +38,8 @@ import TeamPortal from "@/pages/team-portal";
 import FormPelunasan from "@/pages/form-pelunasan";
 import PhotoSplitExpress from "@/pages/photo-split";
 import RawFileCopyTool from "@/pages/raw-copy";
+import TeamPayments from "@/pages/team-payments";
+import CustomBookingForm from "@/pages/custom-booking-form";
 
 const queryClient = new QueryClient();
 
@@ -131,6 +133,12 @@ function Router() {
       </Route>
       <Route path="/raw-copy">
         <VendorLayout><RawFileCopyTool /></VendorLayout>
+      </Route>
+      <Route path="/team-payments">
+        <VendorLayout><TeamPayments /></VendorLayout>
+      </Route>
+      <Route path="/custom-booking-form">
+        <VendorLayout><CustomBookingForm /></VendorLayout>
       </Route>
 
       {/* Admin Routes */}
