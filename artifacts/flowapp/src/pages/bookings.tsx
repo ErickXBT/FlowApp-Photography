@@ -413,7 +413,7 @@ export default function Bookings() {
             return (
               <div
                 key={booking.id}
-                className={`border ${borderCls} rounded-xl p-5 bg-[#111827] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:bg-slate-900/40`}
+                className={`border ${borderCls} rounded-xl p-5 bg-[#111827] flex flex-col xl:flex-row xl:items-center justify-between gap-5 transition-all hover:bg-slate-900/40`}
               >
                 {/* Details Left */}
                 <div className="space-y-2.5 flex-1 min-w-0">
@@ -432,6 +432,47 @@ export default function Bookings() {
                   <div className="text-[10px] font-mono text-slate-500 flex items-center gap-1.5 bg-slate-950/40 p-2 rounded-lg border border-[#1e293b] select-all cursor-pointer break-all w-fit max-w-full">
                     <Link2 className="h-3 w-3 text-blue-400 shrink-0" />
                     <span className="truncate">{portalLink}</span>
+                  </div>
+                </div>
+
+                {/* Details Middle: Event, Package, Payment Info */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-3 text-[10px] text-slate-450 xl:border-l xl:border-[#1e293b] xl:pl-5 py-1 min-w-[280px] flex-1">
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Paket Acara</div>
+                    <div className="font-bold text-white mt-0.5 truncate max-w-[120px]" title={booking.packageName || "Custom Package"}>
+                      {booking.packageName || "Custom Package"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Tipe / Lokasi</div>
+                    <div className="font-bold text-slate-300 mt-0.5 truncate max-w-[120px]" title={booking.locationName || "Wisuda / Akad"}>
+                      {booking.locationName || "Wisuda / Akad"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Jadwal Sesi</div>
+                    <div className="font-bold text-white mt-0.5">
+                      {new Date(booking.eventDate).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                      })} - {new Date(booking.eventDate).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })} WIB
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 font-bold uppercase tracking-wider text-[8px]">Status Pembayaran</div>
+                    <div className="mt-0.5">
+                      {booking.status === "delivered" || booking.status === "closed" ? (
+                        <span className="text-green-400 font-bold">✓ Lunas</span>
+                      ) : booking.status === "dp_paid" ? (
+                        <span className="text-cyan-400 font-bold">● DP Paid</span>
+                      ) : (
+                        <span className="text-amber-500 font-bold">● Belum Lunas</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
