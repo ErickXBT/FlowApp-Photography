@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { fmtIDR } from "@/lib/utils";
 import {
+  useListTeamMembers,
+  useUpdateTeamMember,
+  getListTeamMembersQueryKey
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
   Users,
   Search,
   DollarSign,
@@ -31,36 +37,69 @@ interface PaymentRow {
 
 export default function TeamPayments() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
 
-  const [payments, setPayments] = useState<PaymentRow[]>([
-    { id: 1, name: "Ryan Eko Pramono", role: "Photographer Utama", eventsCount: 12, ratePerEvent: 350000, totalEarned: 4200000, paidAmount: 4200000, balance: 0, status: "Lunas" },
-    { id: 2, name: "Hendra Wijaya", role: "Second Photographer", eventsCount: 8, ratePerEvent: 250000, totalEarned: 2000000, paidAmount: 1500000, balance: 500000, status: "Belum Lunas" },
-    { id: 3, name: "Siti Rahma", role: "Videographer", eventsCount: 10, ratePerEvent: 300000, totalEarned: 3000000, paidAmount: 3000000, balance: 0, status: "Lunas" },
-    { id: 4, name: "Budi Santoso", role: "Assistant / Lighting", eventsCount: 6, ratePerEvent: 150000, totalEarned: 900000, paidAmount: 600000, balance: 300000, status: "Belum Lunas" },
-    { id: 5, name: "Dewi Lestari", role: "Editor / Retoucher", eventsCount: 15, ratePerEvent: 100000, totalEarned: 1500000, paidAmount: 1500000, balance: 0, status: "Lunas" },
-  ]);
+  const { data: members, isLoading } = useListTeamMembers();
+  const updateMember = useUpdateTeamMember({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListTeamMembersQueryKey() });
+      }
+    }
+  });
 
   const handlePay = (id: number) => {
-    setPayments(prev =>
-      prev.map(row => {
-        if (row.id === id) {
-          toast({
-            title: "Pembayaran Berhasil!",
-            description: `Pembayaran sisa Rp ${row.balance.toLocaleString()} kepada ${row.name} berhasil diproses.`
-          });
-          return {
-            ...row,
-            paidAmount: row.totalEarned,
-            balance: 0,
-            status: "Lunas"
-          };
-        }
-        return row;
-      })
-    );
+    const member = members?.find(m => m.id === id);
+    if (!member) return;
+
+    const totalEarned = (member.ratePerEvent ?? 0) * (member.eventsCount ?? 0);
+    
+    updateMember.mutate({
+      id: member.id,
+      data: {
+        paidAmount: totalEarned
+      }
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Pembayaran Berhasil!",
+          description: `Pembayaran sisa kepada ${member.name} berhasil diproses.`
+        });
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6 text-white min-h-screen bg-[#0f172a]">
+        <div className="h-10 w-48 bg-[#1e293b] rounded-lg animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[1, 2, 3].map((i) => <div key={i} className="h-28 bg-[#111827] border border-[#1e293b] rounded-xl animate-pulse" />)}
+        </div>
+      </div>
+    );
+  }
+
+  const payments: PaymentRow[] = (members ?? []).map((m) => {
+    const rate = m.ratePerEvent ?? 0;
+    const count = m.eventsCount ?? 0;
+    const totalEarned = rate * count;
+    const paid = m.paidAmount ?? 0;
+    const balance = totalEarned - paid;
+    return {
+      id: m.id,
+      name: m.name,
+      role: m.role.replace("_", " "),
+      eventsCount: count,
+      ratePerEvent: rate,
+      totalEarned,
+      paidAmount: paid,
+      balance: balance > 0 ? balance : 0,
+      status: balance <= 0 ? "Lunas" : "Belum Lunas",
+    };
+  });
 
   const totalPayroll = payments.reduce((sum, item) => sum + item.totalEarned, 0);
   const totalPaid = payments.reduce((sum, item) => sum + item.paidAmount, 0);

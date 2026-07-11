@@ -14,4 +14,8 @@ export interface TeamMemberInput {
   photoUrl?: string;
   bio?: string;
   portfolioUrl?: string;
+  whatsapp?: string;
+  ratePerEvent?: number;
+  paidAmount?: number;
+  eventsCount?: number;
 }

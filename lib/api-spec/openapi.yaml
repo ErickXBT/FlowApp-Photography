@@ -814,6 +814,14 @@ components:
           type: ["string", "null"]
         portfolioUrl:
           type: ["string", "null"]
+        whatsapp:
+          type: ["string", "null"]
+        ratePerEvent:
+          type: ["integer", "null"]
+        paidAmount:
+          type: ["integer", "null"]
+        eventsCount:
+          type: ["integer", "null"]
         createdAt:
           type: string
           format: date-time
@@ -833,6 +841,14 @@ components:
           type: string
         portfolioUrl:
           type: string
+        whatsapp:
+          type: string
+        ratePerEvent:
+          type: integer
+        paidAmount:
+          type: integer
+        eventsCount:
+          type: integer
 
     TeamMemberUpdate:
       type: object
@@ -848,6 +864,14 @@ components:
           type: string
         portfolioUrl:
           type: string
+        whatsapp:
+          type: string
+        ratePerEvent:
+          type: integer
+        paidAmount:
+          type: integer
+        eventsCount:
+          type: integer
 
     ClientOrigin:
       type: string
