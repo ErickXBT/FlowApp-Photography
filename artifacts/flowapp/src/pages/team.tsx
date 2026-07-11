@@ -6,7 +6,6 @@ import {
   useUpdateTeamMember,
   useDeleteTeamMember,
   getListTeamMembersQueryKey,
-  TeamRole,
 } from "@workspace/api-client-react";
 import type { TeamMember } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -23,8 +22,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, Pencil, Plus } from "lucide-react";
 
-const roles = Object.values(TeamRole);
-
 const emptyForm = {
   name: "",
   role: "photographer" as string,
@@ -34,6 +31,8 @@ const emptyForm = {
   whatsapp: ""
 };
 
+const defaultRoles = ["photographer", "videographer", "mua", "hair_stylist", "editor"];
+
 export default function Team() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -42,6 +41,9 @@ export default function Team() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [form, setForm] = useState(emptyForm);
+
+  const [isCustomRole, setIsCustomRole] = useState(false);
+  const [customRoleText, setCustomRoleText] = useState("");
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getListTeamMembersQueryKey() });
 
@@ -55,9 +57,18 @@ export default function Team() {
     mutation: { onSuccess: () => { invalidate(); toast({ title: "Team member removed" }); } },
   });
 
-  const openCreate = () => { setEditingMember(null); setForm(emptyForm); setDialogOpen(true); };
+  const openCreate = () => {
+    setEditingMember(null);
+    setForm(emptyForm);
+    setIsCustomRole(false);
+    setCustomRoleText("");
+    setDialogOpen(true);
+  };
   const openEdit = (m: TeamMember) => {
     setEditingMember(m);
+    const isCustom = !defaultRoles.includes(m.role);
+    setIsCustomRole(isCustom);
+    setCustomRoleText(isCustom ? m.role : "");
     setForm({
       name: m.name,
       role: m.role,
@@ -70,9 +81,14 @@ export default function Team() {
   };
 
   const submit = () => {
+    const finalRole = isCustomRole ? customRoleText : form.role;
+    if (!finalRole) {
+      toast({ title: "Role tidak boleh kosong", variant: "destructive" });
+      return;
+    }
     const data = {
       name: form.name,
-      role: form.role as any,
+      role: finalRole,
       photoUrl: form.photoUrl || undefined,
       bio: form.bio || undefined,
       portfolioUrl: form.portfolioUrl || undefined,
@@ -214,15 +230,44 @@ export default function Team() {
             
             <div className="space-y-1.5">
               <Label className="text-slate-300">Role / Posisi</Label>
-              <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
+              <Select
+                value={isCustomRole ? "custom" : form.role}
+                onValueChange={(v) => {
+                  if (v === "custom") {
+                    setIsCustomRole(true);
+                  } else {
+                    setIsCustomRole(false);
+                    setForm({ ...form, role: v });
+                  }
+                }}
+              >
                 <SelectTrigger className="capitalize bg-[#0f172a] border-[#2d3748] text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-[#1e293b] border-[#2d3748] text-white">
-                  {roles.map((r) => <SelectItem key={r} value={r} className="capitalize focus:bg-[#2d3748] focus:text-white">{r.replace("_", " ")}</SelectItem>)}
+                  {defaultRoles.map((r) => (
+                    <SelectItem key={r} value={r} className="capitalize focus:bg-[#2d3748] focus:text-white">
+                      {r.replace("_", " ")}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom" className="focus:bg-[#2d3748] focus:text-white text-[#A3E635] font-bold">
+                    + Tambah Posisi Baru...
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {isCustomRole && (
+              <div className="space-y-1.5 animate-in fade-in-50 duration-200">
+                <Label className="text-slate-300">Nama Posisi Kustom</Label>
+                <Input
+                  placeholder="Ketik posisi baru (misal: Lighting Assistant, Driver...)"
+                  value={customRoleText}
+                  onChange={(e) => setCustomRoleText(e.target.value)}
+                  className="bg-[#0f172a] border-[#2d3748] text-white"
+                />
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <Label className="text-slate-300">Contact WhatsApp</Label>

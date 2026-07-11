@@ -856,7 +856,6 @@ components:
 
     TeamRole:
       type: string
-      enum: [photographer, videographer, mua, hair_stylist, editor]
 
     TeamMember:
       type: object

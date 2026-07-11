@@ -6,13 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type TeamRole = typeof TeamRole[keyof typeof TeamRole];
-
-
-export const TeamRole = {
-  photographer: 'photographer',
-  videographer: 'videographer',
-  mua: 'mua',
-  hair_stylist: 'hair_stylist',
-  editor: 'editor',
-} as const;
+export type TeamRole = string;

@@ -276,7 +276,7 @@ export const DeleteAddOnResponse = zod.void()
 export const ListTeamMembersResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
@@ -291,7 +291,7 @@ export const ListTeamMembersResponse = zod.array(ListTeamMembersResponseItem)
 
 export const CreateTeamMemberBody = zod.object({
   "name": zod.string().min(1),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().optional(),
   "bio": zod.string().optional(),
   "portfolioUrl": zod.string().optional(),
@@ -301,7 +301,7 @@ export const CreateTeamMemberBody = zod.object({
 export const CreateTeamMemberResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
@@ -319,7 +319,7 @@ export const UpdateTeamMemberParams = zod.object({
 
 export const UpdateTeamMemberBody = zod.object({
   "name": zod.string().min(1).optional(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']).optional(),
+  "role": zod.string().optional(),
   "photoUrl": zod.string().optional(),
   "bio": zod.string().optional(),
   "portfolioUrl": zod.string().optional(),
@@ -329,7 +329,7 @@ export const UpdateTeamMemberBody = zod.object({
 export const UpdateTeamMemberResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
@@ -697,7 +697,7 @@ export const GetBookingResponse = zod.object({
   "teamMembers": zod.array(zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
@@ -858,7 +858,7 @@ export const GetCalendarBookingsResponseItem = zod.object({
   "teamMembers": zod.array(zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "role": zod.enum(['photographer', 'videographer', 'mua', 'hair_stylist', 'editor']),
+  "role": zod.string(),
   "photoUrl": zod.string().nullish(),
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),

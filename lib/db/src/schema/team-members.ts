@@ -3,12 +3,12 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const teamRoleEnum = ["photographer", "videographer", "mua", "hair_stylist", "editor"] as const;
-export type TeamRole = (typeof teamRoleEnum)[number];
+export type TeamRole = string;
 
 export const teamMembersTable = pgTable("team_members", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  role: text("role", { enum: teamRoleEnum }).notNull(),
+  role: text("role").notNull(),
   photoUrl: text("photo_url"),
   bio: text("bio"),
   portfolioUrl: text("portfolio_url"),

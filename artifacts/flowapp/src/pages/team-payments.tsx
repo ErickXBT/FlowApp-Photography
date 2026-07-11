@@ -56,6 +56,9 @@ export default function TeamPayments() {
     paidAmount: 0
   });
 
+  const [isCustomRole, setIsCustomRole] = useState(false);
+  const [customRoleText, setCustomRoleText] = useState("");
+
   const { data: rawPayments, isLoading: paymentsLoading } = useListTeamPayments();
   const { data: teamMembers } = useListTeamMembers();
 
@@ -64,6 +67,8 @@ export default function TeamPayments() {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListTeamPaymentsQueryKey() });
         setForm({ freelancerName: "", role: "photographer", eventsCount: 1, ratePerEvent: 300000, paidAmount: 0 });
+        setIsCustomRole(false);
+        setCustomRoleText("");
         setAddDialogOpen(false);
         toast({ title: "Data Pembayaran Kru Ditambahkan" });
       }
@@ -207,6 +212,10 @@ export default function TeamPayments() {
                     } else {
                       const member = teamMembers?.find(m => String(m.id) === val);
                       if (member) {
+                        const defaultRoles = ["photographer", "videographer", "mua", "hair_stylist", "editor"];
+                        const isCustom = !defaultRoles.includes(member.role);
+                        setIsCustomRole(isCustom);
+                        setCustomRoleText(isCustom ? member.role : "");
                         setForm(prev => ({ ...prev, freelancerName: member.name, role: member.role }));
                       }
                     }
@@ -240,7 +249,17 @@ export default function TeamPayments() {
               {/* Role Selector */}
               <div className="space-y-1.5">
                 <Label className="text-slate-300">Role / Posisi</Label>
-                <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
+                <Select
+                  value={isCustomRole ? "custom" : form.role}
+                  onValueChange={(v) => {
+                    if (v === "custom") {
+                      setIsCustomRole(true);
+                    } else {
+                      setIsCustomRole(false);
+                      setForm({ ...form, role: v });
+                    }
+                  }}
+                >
                   <SelectTrigger className="bg-[#0f172a] border-[#2d3748] text-white capitalize">
                     <SelectValue />
                   </SelectTrigger>
@@ -250,9 +269,24 @@ export default function TeamPayments() {
                         {r.replace("_", " ")}
                       </SelectItem>
                     ))}
+                    <SelectItem value="custom" className="focus:bg-[#2d3748] focus:text-white text-[#A3E635] font-bold">
+                      + Tambah Posisi Baru...
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              {isCustomRole && (
+                <div className="space-y-1.5 animate-in fade-in-50 duration-200">
+                  <Label className="text-slate-300">Nama Posisi Kustom</Label>
+                  <Input
+                    placeholder="Ketik posisi baru..."
+                    value={customRoleText}
+                    onChange={(e) => setCustomRoleText(e.target.value)}
+                    className="bg-[#0f172a] border-[#2d3748] text-white"
+                  />
+                </div>
+              )}
 
               {/* Project inputs */}
               <div className="grid grid-cols-2 gap-4">
@@ -289,8 +323,8 @@ export default function TeamPayments() {
             </div>
             <DialogFooter>
               <Button
-                disabled={!form.freelancerName || createPayment.isPending}
-                onClick={() => createPayment.mutate({ data: form })}
+                disabled={!form.freelancerName || (isCustomRole && !customRoleText) || createPayment.isPending}
+                onClick={() => createPayment.mutate({ data: { ...form, role: isCustomRole ? customRoleText : form.role } })}
                 className="bg-[#A3E635] hover:bg-[#84cc16] text-[#0f172a] font-bold"
               >
                 {createPayment.isPending ? "Menyimpan..." : "Simpan Pembayaran"}
