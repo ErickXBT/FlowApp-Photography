@@ -48,13 +48,43 @@ export default function Team() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: getListTeamMembersQueryKey() });
 
   const createMember = useCreateTeamMember({
-    mutation: { onSuccess: () => { invalidate(); setDialogOpen(false); setForm(emptyForm); toast({ title: "Team member added" }); } },
+    mutation: {
+      onSuccess: () => { invalidate(); setDialogOpen(false); setForm(emptyForm); toast({ title: "Team member added" }); },
+      onError: (err: any) => {
+        console.error("Create member error:", err);
+        toast({
+          title: "Gagal Menambahkan Anggota",
+          description: err.response?.data?.error || err.message || "Terjadi kesalahan pada server",
+          variant: "destructive"
+        });
+      }
+    },
   });
   const updateMember = useUpdateTeamMember({
-    mutation: { onSuccess: () => { invalidate(); setDialogOpen(false); setEditingMember(null); setForm(emptyForm); toast({ title: "Team member updated" }); } },
+    mutation: {
+      onSuccess: () => { invalidate(); setDialogOpen(false); setEditingMember(null); setForm(emptyForm); toast({ title: "Team member updated" }); },
+      onError: (err: any) => {
+        console.error("Update member error:", err);
+        toast({
+          title: "Gagal Memperbarui Anggota",
+          description: err.response?.data?.error || err.message || "Terjadi kesalahan pada server",
+          variant: "destructive"
+        });
+      }
+    },
   });
   const deleteMember = useDeleteTeamMember({
-    mutation: { onSuccess: () => { invalidate(); toast({ title: "Team member removed" }); } },
+    mutation: {
+      onSuccess: () => { invalidate(); toast({ title: "Team member removed" }); },
+      onError: (err: any) => {
+        console.error("Delete member error:", err);
+        toast({
+          title: "Gagal Menghapus Anggota",
+          description: err.response?.data?.error || err.message || "Terjadi kesalahan pada server",
+          variant: "destructive"
+        });
+      }
+    },
   });
 
   const openCreate = () => {

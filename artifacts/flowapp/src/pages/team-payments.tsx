@@ -71,6 +71,14 @@ export default function TeamPayments() {
         setCustomRoleText("");
         setAddDialogOpen(false);
         toast({ title: "Data Pembayaran Kru Ditambahkan" });
+      },
+      onError: (err: any) => {
+        console.error("Create payment error:", err);
+        toast({
+          title: "Gagal Menambahkan Pembayaran",
+          description: err.response?.data?.error || err.message || "Terjadi kesalahan pada server",
+          variant: "destructive"
+        });
       }
     }
   });
@@ -79,6 +87,14 @@ export default function TeamPayments() {
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListTeamPaymentsQueryKey() });
+      },
+      onError: (err: any) => {
+        console.error("Update payment error:", err);
+        toast({
+          title: "Gagal Memperbarui Pembayaran",
+          description: err.response?.data?.error || err.message || "Terjadi kesalahan pada server",
+          variant: "destructive"
+        });
       }
     }
   });
