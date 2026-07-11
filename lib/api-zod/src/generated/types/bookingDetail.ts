@@ -15,7 +15,7 @@ import type { TeamMember } from './teamMember';
 
 export type BookingDetail = Booking & ({
   client: Client;
-  package: Package;
+  package: Package | null;
   teamMembers: TeamMember[];
   addOns: AddOn[];
   moodboardLinks: string[];

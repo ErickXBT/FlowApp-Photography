@@ -684,7 +684,7 @@ export const GetBookingResponse = zod.object({
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 }),
-  "package": zod.object({
+  "package": zod.union([zod.object({
   "id": zod.number(),
   "categoryId": zod.number().nullish(),
   "name": zod.string(),
@@ -693,7 +693,7 @@ export const GetBookingResponse = zod.object({
   "includedEditedPhotos": zod.number(),
   "estimatedDays": zod.number(),
   "createdAt": zod.coerce.date()
-}),
+}),zod.null()]),
   "teamMembers": zod.array(zod.object({
   "id": zod.number(),
   "name": zod.string(),

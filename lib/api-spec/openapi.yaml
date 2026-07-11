@@ -1264,7 +1264,9 @@ components:
             client:
               $ref: "#/components/schemas/Client"
             package:
-              $ref: "#/components/schemas/Package"
+              oneOf:
+                - $ref: "#/components/schemas/Package"
+                - type: "null"
             teamMembers:
               type: array
               items:

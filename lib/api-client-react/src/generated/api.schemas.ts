@@ -386,7 +386,7 @@ export interface DeliveryFile {
 
 export type BookingDetail = Booking & ({
   client: Client;
-  package: Package;
+  package: Package | null;
   teamMembers: TeamMember[];
   addOns: AddOn[];
   moodboardLinks: string[];
