@@ -281,9 +281,6 @@ export const ListTeamMembersResponseItem = zod.object({
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
-  "ratePerEvent": zod.number().nullish(),
-  "paidAmount": zod.number().nullish(),
-  "eventsCount": zod.number().nullish(),
   "createdAt": zod.coerce.date()
 })
 export const ListTeamMembersResponse = zod.array(ListTeamMembersResponseItem)
@@ -298,10 +295,7 @@ export const CreateTeamMemberBody = zod.object({
   "photoUrl": zod.string().optional(),
   "bio": zod.string().optional(),
   "portfolioUrl": zod.string().optional(),
-  "whatsapp": zod.string().optional(),
-  "ratePerEvent": zod.number().optional(),
-  "paidAmount": zod.number().optional(),
-  "eventsCount": zod.number().optional()
+  "whatsapp": zod.string().optional()
 })
 
 export const CreateTeamMemberResponse = zod.object({
@@ -312,9 +306,6 @@ export const CreateTeamMemberResponse = zod.object({
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
-  "ratePerEvent": zod.number().nullish(),
-  "paidAmount": zod.number().nullish(),
-  "eventsCount": zod.number().nullish(),
   "createdAt": zod.coerce.date()
 })
 
@@ -332,10 +323,7 @@ export const UpdateTeamMemberBody = zod.object({
   "photoUrl": zod.string().optional(),
   "bio": zod.string().optional(),
   "portfolioUrl": zod.string().optional(),
-  "whatsapp": zod.string().optional(),
-  "ratePerEvent": zod.number().optional(),
-  "paidAmount": zod.number().optional(),
-  "eventsCount": zod.number().optional()
+  "whatsapp": zod.string().optional()
 })
 
 export const UpdateTeamMemberResponse = zod.object({
@@ -346,9 +334,6 @@ export const UpdateTeamMemberResponse = zod.object({
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
-  "ratePerEvent": zod.number().nullish(),
-  "paidAmount": zod.number().nullish(),
-  "eventsCount": zod.number().nullish(),
   "createdAt": zod.coerce.date()
 })
 
@@ -358,6 +343,67 @@ export const DeleteTeamMemberParams = zod.object({
 })
 
 export const DeleteTeamMemberResponse = zod.void()
+
+
+export const ListTeamPaymentsResponseItem = zod.object({
+  "id": zod.number(),
+  "freelancerName": zod.string(),
+  "role": zod.string(),
+  "eventsCount": zod.number(),
+  "ratePerEvent": zod.number(),
+  "paidAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListTeamPaymentsResponse = zod.array(ListTeamPaymentsResponseItem)
+
+
+export const CreateTeamPaymentBody = zod.object({
+  "freelancerName": zod.string(),
+  "role": zod.string(),
+  "eventsCount": zod.number(),
+  "ratePerEvent": zod.number(),
+  "paidAmount": zod.number()
+})
+
+export const CreateTeamPaymentResponse = zod.object({
+  "id": zod.number(),
+  "freelancerName": zod.string(),
+  "role": zod.string(),
+  "eventsCount": zod.number(),
+  "ratePerEvent": zod.number(),
+  "paidAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const UpdateTeamPaymentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateTeamPaymentBody = zod.object({
+  "freelancerName": zod.string().optional(),
+  "role": zod.string().optional(),
+  "eventsCount": zod.number().optional(),
+  "ratePerEvent": zod.number().optional(),
+  "paidAmount": zod.number().optional()
+})
+
+export const UpdateTeamPaymentResponse = zod.object({
+  "id": zod.number(),
+  "freelancerName": zod.string(),
+  "role": zod.string(),
+  "eventsCount": zod.number(),
+  "ratePerEvent": zod.number(),
+  "paidAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const DeleteTeamPaymentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteTeamPaymentResponse = zod.void()
 
 
 export const ListClientsResponseItem = zod.object({
@@ -656,9 +702,6 @@ export const GetBookingResponse = zod.object({
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
-  "ratePerEvent": zod.number().nullish(),
-  "paidAmount": zod.number().nullish(),
-  "eventsCount": zod.number().nullish(),
   "createdAt": zod.coerce.date()
 })),
   "addOns": zod.array(zod.object({
@@ -820,9 +863,6 @@ export const GetCalendarBookingsResponseItem = zod.object({
   "bio": zod.string().nullish(),
   "portfolioUrl": zod.string().nullish(),
   "whatsapp": zod.string().nullish(),
-  "ratePerEvent": zod.number().nullish(),
-  "paidAmount": zod.number().nullish(),
-  "eventsCount": zod.number().nullish(),
   "createdAt": zod.coerce.date()
 })).optional()
 })

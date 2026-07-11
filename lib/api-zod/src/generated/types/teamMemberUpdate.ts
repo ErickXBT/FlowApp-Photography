@@ -15,7 +15,4 @@ export interface TeamMemberUpdate {
   bio?: string;
   portfolioUrl?: string;
   whatsapp?: string;
-  ratePerEvent?: number;
-  paidAmount?: number;
-  eventsCount?: number;
 }

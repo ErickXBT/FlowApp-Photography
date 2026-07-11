@@ -43,4 +43,7 @@ export * from './statusCount';
 export * from './teamMember';
 export * from './teamMemberInput';
 export * from './teamMemberUpdate';
+export * from './teamPayment';
+export * from './teamPaymentInput';
+export * from './teamPaymentUpdate';
 export * from './teamRole';

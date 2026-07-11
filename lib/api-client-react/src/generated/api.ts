@@ -50,7 +50,10 @@ import type {
   PackageUpdate,
   TeamMember,
   TeamMemberInput,
-  TeamMemberUpdate
+  TeamMemberUpdate,
+  TeamPayment,
+  TeamPaymentInput,
+  TeamPaymentUpdate
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -1360,6 +1363,270 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getDeleteTeamMemberMutationOptions(options));
+    }
+
+export const getListTeamPaymentsUrl = () => {
+
+
+
+
+  return `/api/team-payments`
+}
+
+export const listTeamPayments = async ( options?: RequestInit): Promise<TeamPayment[]> => {
+
+  return customFetch<TeamPayment[]>(getListTeamPaymentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListTeamPaymentsQueryKey = () => {
+    return [
+    `/api/team-payments`
+    ] as const;
+    }
+
+
+export const getListTeamPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof listTeamPayments>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTeamPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListTeamPaymentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTeamPayments>>> = ({ signal }) => listTeamPayments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTeamPayments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListTeamPaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof listTeamPayments>>>
+export type ListTeamPaymentsQueryError = ErrorType<unknown>
+
+
+
+export function useListTeamPayments<TData = Awaited<ReturnType<typeof listTeamPayments>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTeamPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListTeamPaymentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateTeamPaymentUrl = () => {
+
+
+
+
+  return `/api/team-payments`
+}
+
+export const createTeamPayment = async (teamPaymentInput: TeamPaymentInput, options?: RequestInit): Promise<TeamPayment> => {
+
+  return customFetch<TeamPayment>(getCreateTeamPaymentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(teamPaymentInput)
+  }
+);}
+
+
+
+
+export const getCreateTeamPaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTeamPayment>>, TError,{data: BodyType<TeamPaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createTeamPayment>>, TError,{data: BodyType<TeamPaymentInput>}, TContext> => {
+
+const mutationKey = ['createTeamPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createTeamPayment>>, {data: BodyType<TeamPaymentInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createTeamPayment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateTeamPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof createTeamPayment>>>
+    export type CreateTeamPaymentMutationBody = BodyType<TeamPaymentInput>
+    export type CreateTeamPaymentMutationError = ErrorType<unknown>
+
+    export const useCreateTeamPayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTeamPayment>>, TError,{data: BodyType<TeamPaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createTeamPayment>>,
+        TError,
+        {data: BodyType<TeamPaymentInput>},
+        TContext
+      > => {
+      return useMutation(getCreateTeamPaymentMutationOptions(options));
+    }
+
+export const getUpdateTeamPaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/team-payments/${id}`
+}
+
+export const updateTeamPayment = async (id: number,
+    teamPaymentUpdate: TeamPaymentUpdate, options?: RequestInit): Promise<TeamPayment> => {
+
+  return customFetch<TeamPayment>(getUpdateTeamPaymentUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(teamPaymentUpdate)
+  }
+);}
+
+
+
+
+export const getUpdateTeamPaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTeamPayment>>, TError,{id: number;data: BodyType<TeamPaymentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateTeamPayment>>, TError,{id: number;data: BodyType<TeamPaymentUpdate>}, TContext> => {
+
+const mutationKey = ['updateTeamPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateTeamPayment>>, {id: number;data: BodyType<TeamPaymentUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateTeamPayment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateTeamPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof updateTeamPayment>>>
+    export type UpdateTeamPaymentMutationBody = BodyType<TeamPaymentUpdate>
+    export type UpdateTeamPaymentMutationError = ErrorType<unknown>
+
+    export const useUpdateTeamPayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTeamPayment>>, TError,{id: number;data: BodyType<TeamPaymentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateTeamPayment>>,
+        TError,
+        {id: number;data: BodyType<TeamPaymentUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateTeamPaymentMutationOptions(options));
+    }
+
+export const getDeleteTeamPaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/team-payments/${id}`
+}
+
+export const deleteTeamPayment = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteTeamPaymentUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteTeamPaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTeamPayment>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTeamPayment>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteTeamPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTeamPayment>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteTeamPayment(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteTeamPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTeamPayment>>>
+
+    export type DeleteTeamPaymentMutationError = ErrorType<unknown>
+
+    export const useDeleteTeamPayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTeamPayment>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTeamPayment>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteTeamPaymentMutationOptions(options));
     }
 
 export const getListClientsUrl = () => {

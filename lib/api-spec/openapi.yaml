@@ -306,6 +306,66 @@ paths:
         "204":
           description: Deleted
 
+  /team-payments:
+    get:
+      operationId: listTeamPayments
+      tags: [teamPayments]
+      responses:
+        "200":
+          description: List of team payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamPayment"
+    post:
+      operationId: createTeamPayment
+      tags: [teamPayments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamPaymentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamPayment"
+
+  /team-payments/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      operationId: updateTeamPayment
+      tags: [teamPayments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamPaymentUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamPayment"
+    delete:
+      operationId: deleteTeamPayment
+      tags: [teamPayments]
+      responses:
+        "204":
+          description: Deleted
+
   /clients:
     get:
       operationId: listClients
@@ -816,12 +876,6 @@ components:
           type: ["string", "null"]
         whatsapp:
           type: ["string", "null"]
-        ratePerEvent:
-          type: ["integer", "null"]
-        paidAmount:
-          type: ["integer", "null"]
-        eventsCount:
-          type: ["integer", "null"]
         createdAt:
           type: string
           format: date-time
@@ -843,12 +897,6 @@ components:
           type: string
         whatsapp:
           type: string
-        ratePerEvent:
-          type: integer
-        paidAmount:
-          type: integer
-        eventsCount:
-          type: integer
 
     TeamMemberUpdate:
       type: object
@@ -866,11 +914,54 @@ components:
           type: string
         whatsapp:
           type: string
+
+    TeamPayment:
+      type: object
+      required: [id, freelancerName, role, eventsCount, ratePerEvent, paidAmount, createdAt]
+      properties:
+        id:
+          type: integer
+        freelancerName:
+          type: string
+        role:
+          type: string
+        eventsCount:
+          type: integer
         ratePerEvent:
           type: integer
         paidAmount:
           type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    TeamPaymentInput:
+      type: object
+      required: [freelancerName, role, eventsCount, ratePerEvent, paidAmount]
+      properties:
+        freelancerName:
+          type: string
+        role:
+          type: string
         eventsCount:
+          type: integer
+        ratePerEvent:
+          type: integer
+        paidAmount:
+          type: integer
+
+    TeamPaymentUpdate:
+      type: object
+      properties:
+        freelancerName:
+          type: string
+        role:
+          type: string
+        eventsCount:
+          type: integer
+        ratePerEvent:
+          type: integer
+        paidAmount:
           type: integer
 
     ClientOrigin:

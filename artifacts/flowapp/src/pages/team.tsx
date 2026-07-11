@@ -31,10 +31,7 @@ const emptyForm = {
   photoUrl: "",
   bio: "",
   portfolioUrl: "",
-  whatsapp: "",
-  ratePerEvent: 0,
-  paidAmount: 0,
-  eventsCount: 0
+  whatsapp: ""
 };
 
 export default function Team() {
@@ -67,10 +64,7 @@ export default function Team() {
       photoUrl: m.photoUrl ?? "",
       bio: m.bio ?? "",
       portfolioUrl: m.portfolioUrl ?? "",
-      whatsapp: m.whatsapp ?? "",
-      ratePerEvent: m.ratePerEvent ?? 0,
-      paidAmount: m.paidAmount ?? 0,
-      eventsCount: m.eventsCount ?? 0
+      whatsapp: m.whatsapp ?? ""
     });
     setDialogOpen(true);
   };
@@ -82,10 +76,7 @@ export default function Team() {
       photoUrl: form.photoUrl || undefined,
       bio: form.bio || undefined,
       portfolioUrl: form.portfolioUrl || undefined,
-      whatsapp: form.whatsapp || undefined,
-      ratePerEvent: Number(form.ratePerEvent) || 0,
-      paidAmount: Number(form.paidAmount) || 0,
-      eventsCount: Number(form.eventsCount) || 0
+      whatsapp: form.whatsapp || undefined
     };
     if (editingMember) updateMember.mutate({ id: editingMember.id, data });
     else createMember.mutate({ data });
@@ -176,20 +167,12 @@ export default function Team() {
                   View Portfolio
                 </a>
               )}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800 text-[11px] text-slate-450">
-                {m.whatsapp && (
-                  <div>
-                    <span className="text-slate-500 block font-bold text-[8px] uppercase">WhatsApp</span>
-                    <span className="font-semibold text-slate-300">{m.whatsapp}</span>
-                  </div>
-                )}
-                {m.ratePerEvent !== undefined && m.ratePerEvent !== null && (
-                  <div>
-                    <span className="text-slate-500 block font-bold text-[8px] uppercase">Tarif / Project</span>
-                    <span className="font-semibold text-white">Rp {m.ratePerEvent.toLocaleString("id-ID")}</span>
-                  </div>
-                )}
-              </div>
+              {m.whatsapp && (
+                <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-450">
+                  <span className="text-slate-500 block font-bold text-[8px] uppercase">WhatsApp</span>
+                  <span className="font-semibold text-slate-300">{m.whatsapp}</span>
+                </div>
+              )}
               <div className="flex gap-2 pt-2">
                 <Button variant="outline" size="sm" onClick={() => openEdit(m)} className="border-slate-700 text-slate-300 hover:bg-slate-800">
                   <Pencil className="h-3 w-3 mr-1" /> Edit
@@ -278,21 +261,6 @@ export default function Team() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-slate-300">Tarif per Project (IDR)</Label>
-              <Input type="number" placeholder="Contoh: 350000" value={form.ratePerEvent || ""} onChange={(e) => setForm({ ...form, ratePerEvent: Number(e.target.value) })} className="bg-[#0f172a] border-[#2d3748] text-white" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-slate-300">Jumlah Project</Label>
-                <Input type="number" value={form.eventsCount || ""} placeholder="0" onChange={(e) => setForm({ ...form, eventsCount: Number(e.target.value) })} className="bg-[#0f172a] border-[#2d3748] text-white" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-slate-300">Sudah Dibayar</Label>
-                <Input type="number" value={form.paidAmount || ""} placeholder="0" onChange={(e) => setForm({ ...form, paidAmount: Number(e.target.value) })} className="bg-[#0f172a] border-[#2d3748] text-white" />
-              </div>
-            </div>
 
             <div className="space-y-1.5">
               <Label className="text-slate-300">Bio</Label>

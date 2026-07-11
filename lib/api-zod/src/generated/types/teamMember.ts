@@ -19,11 +19,5 @@ export interface TeamMember {
   portfolioUrl?: string | null;
   /** @nullable */
   whatsapp?: string | null;
-  /** @nullable */
-  ratePerEvent?: number | null;
-  /** @nullable */
-  paidAmount?: number | null;
-  /** @nullable */
-  eventsCount?: number | null;
   createdAt: Date;
 }

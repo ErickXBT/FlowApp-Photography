@@ -196,12 +196,6 @@ export interface TeamMember {
   portfolioUrl?: string | null;
   /** @nullable */
   whatsapp?: string | null;
-  /** @nullable */
-  ratePerEvent?: number | null;
-  /** @nullable */
-  paidAmount?: number | null;
-  /** @nullable */
-  eventsCount?: number | null;
   createdAt: string;
 }
 
@@ -213,9 +207,6 @@ export interface TeamMemberInput {
   bio?: string;
   portfolioUrl?: string;
   whatsapp?: string;
-  ratePerEvent?: number;
-  paidAmount?: number;
-  eventsCount?: number;
 }
 
 export interface TeamMemberUpdate {
@@ -226,9 +217,32 @@ export interface TeamMemberUpdate {
   bio?: string;
   portfolioUrl?: string;
   whatsapp?: string;
+}
+
+export interface TeamPayment {
+  id: number;
+  freelancerName: string;
+  role: string;
+  eventsCount: number;
+  ratePerEvent: number;
+  paidAmount: number;
+  createdAt: string;
+}
+
+export interface TeamPaymentInput {
+  freelancerName: string;
+  role: string;
+  eventsCount: number;
+  ratePerEvent: number;
+  paidAmount: number;
+}
+
+export interface TeamPaymentUpdate {
+  freelancerName?: string;
+  role?: string;
+  eventsCount?: number;
   ratePerEvent?: number;
   paidAmount?: number;
-  eventsCount?: number;
 }
 
 export interface Client {
